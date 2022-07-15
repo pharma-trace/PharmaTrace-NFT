@@ -9,6 +9,8 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+
 import "./helper.sol";
 // 3. Interfaces, Libraries, Contracts
 error PTNFT__NotOwner();
@@ -63,12 +65,10 @@ contract PTNFT is ERC721URIStorage, EIP712, AccessControl {
     /// @param voucher A signed NFTVoucher that describes the NFT to be redeemed.
     function redeem(
         address redeemer,
-        address owner,
         NFTVoucher calldata voucher /*onlyMarketPlace*/
-    ) public payable returns (uint256) {
+    ) public payable nonReentrant returns (uint256) {
         // make sure signature is valid and get the address of the signer
         address signer = _verify(voucher);
-        if (signer != owner) revert PTNFT__NotOwner();
 
         // first assign the token to the signer, to establish provenance on-chain
         _safeMint(signer, voucher.tokenId);
@@ -101,7 +101,7 @@ contract PTNFT is ERC721URIStorage, EIP712, AccessControl {
     /// @notice Returns the chain id of the current blockchain.
     /// @dev This is used to workaround an issue with ganache returning different values from the on-chain chainid() function and
     ///  the eth_chainId RPC method. See https://github.com/protocol/nft-website/issues/121 for context.
-    function getChainID() external view returns (uint256) {
+    function getChainID() external view nonReentrant returns (uint256) {
         uint256 id;
         assembly {
             id := chainid()
@@ -112,7 +112,7 @@ contract PTNFT is ERC721URIStorage, EIP712, AccessControl {
     /// @notice Verifies the signature for a given NFTVoucher, returning the address of the signer.
     /// @dev Will revert if the signature is invalid. Does not verify that the signer is authorized to mint NFTs.
     /// @param voucher An NFTVoucher describing an unminted NFT.
-    function _verify(NFTVoucher calldata voucher) public view returns (address) {
+    function _verify(NFTVoucher calldata voucher) public view nonReentrant returns (address) {
         bytes32 digest = _hash(voucher);
         return ECDSA.recover(digest, voucher.signature);
     }
