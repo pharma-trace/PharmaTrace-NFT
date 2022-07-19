@@ -21,7 +21,7 @@ error PTNFT__ONLYMARKETPLACE();
  * @notice This contract is for creating a Lazy NFT
  * @dev Create MarketPlace for PhramaTrace
  */
-contract PTNFT is ERC721URIStorage, EIP712, AccessControl {
+contract PTNFT is ERC721URIStorage, EIP712, AccessControl, ReentrancyGuard {
     // State variables
     bytes32 private constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
@@ -51,13 +51,13 @@ contract PTNFT is ERC721URIStorage, EIP712, AccessControl {
     }
 
     constructor(
-        // address marketPlace,
+        address marketPlace,
         string memory name,
         string memory symbol,
         string memory signingDomain,
         string memory signatureVersion
     ) ERC721(name, symbol) EIP712(signingDomain, signatureVersion) {
-        // _setupRole(MINTER_ROLE, marketPlace);// this for ristricty only audit contract will call this
+        _setupRole(MINTER_ROLE, marketPlace); // this for ristricty only audit contract will call this
     }
 
     /// @notice Redeems an NFTVoucher for an actual NFT, creating it in the process.
@@ -66,7 +66,7 @@ contract PTNFT is ERC721URIStorage, EIP712, AccessControl {
     function redeem(
         address redeemer,
         NFTVoucher calldata voucher /*onlyMarketPlace*/
-    ) public payable nonReentrant returns (uint256) {
+    ) public payable onlyMarketPlace returns (uint256) {
         // make sure signature is valid and get the address of the signer
         address signer = _verify(voucher);
 
@@ -101,7 +101,7 @@ contract PTNFT is ERC721URIStorage, EIP712, AccessControl {
     /// @notice Returns the chain id of the current blockchain.
     /// @dev This is used to workaround an issue with ganache returning different values from the on-chain chainid() function and
     ///  the eth_chainId RPC method. See https://github.com/protocol/nft-website/issues/121 for context.
-    function getChainID() external view nonReentrant returns (uint256) {
+    function getChainID() external view returns (uint256) {
         uint256 id;
         assembly {
             id := chainid()
@@ -112,9 +112,31 @@ contract PTNFT is ERC721URIStorage, EIP712, AccessControl {
     /// @notice Verifies the signature for a given NFTVoucher, returning the address of the signer.
     /// @dev Will revert if the signature is invalid. Does not verify that the signer is authorized to mint NFTs.
     /// @param voucher An NFTVoucher describing an unminted NFT.
-    function _verify(NFTVoucher calldata voucher) public view nonReentrant returns (address) {
+    function _verify(NFTVoucher calldata voucher) public view onlyMarketPlace returns (address) {
         bytes32 digest = _hash(voucher);
         return ECDSA.recover(digest, voucher.signature);
+    }
+
+    function getApprovedOrOwner(address spender, uint256 tokenId) public view returns (bool) {
+        return _isApprovedOrOwner(spender, tokenId);
+    }
+
+    /// @notice used to revert the approved on delete.
+
+    function revertApprovalForAll(address operator, uint256 tokenId) public nonReentrant {
+        _approve(operator, tokenId);
+    }
+
+    function _isApprovedOrOwner(address spender, uint256 tokenId)
+        internal
+        view
+        override
+        returns (bool)
+    {
+        address owner = ERC721.ownerOf(tokenId);
+        return (spender == owner ||
+            isApprovedForAll(owner, spender) ||
+            getApproved(tokenId) == spender);
     }
 
     function supportsInterface(bytes4 interfaceId)

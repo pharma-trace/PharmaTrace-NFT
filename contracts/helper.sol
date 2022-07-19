@@ -10,6 +10,11 @@ enum OfferState {
     OPEN,
     CLOSE
 }
+enum FetchOperator {
+    ActiveItems,
+    MyPurchasedItems,
+    MyCreatedItems
+}
 // 3. Interfaces, Libraries, Contracts
 error PTNFTMarketPlace__NotOwner();
 error PTNFTMarketPlace__InsufficientFund();
@@ -25,7 +30,13 @@ error PTNFTMarketPlace__FailToRefundAmountFound();
 error PTNFTMarketPlace__MinPriceGreaterThenZeroWei();
 error PTNFTMarketPlace__PermissionRequired();
 error PTNFTMarketPlace__MarketItemExpired();
+error PTNFTMarketPlace__OfferTimeExpired();
+error PTNFTMarketPlace__NoOfferExist();
+
 error PTNFTMarketPlace__FixedPirceMarketItem();
+error PTNFTMarketPlace__NoTheOwnerOfNFT();
+error PTNFTMarketPlace__ItemIdInvalid();
+error PTNFTMarketPlace__ItemMustBeOnMarket();
 
 struct NFTVoucher {
     /// @notice The id of the token to be redeemed. Must be unique - if another token with this ID already exists, the redeem function will revert.
