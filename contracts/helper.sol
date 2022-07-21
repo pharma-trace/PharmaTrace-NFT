@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.8;
 enum State {
     Created,
     Release,
@@ -27,7 +27,7 @@ error PTNFTMarketPlace__FailToTransferListingFee();
 error PTNFTMarketPlace__FailToTransferNFTOfferAmount();
 error PTNFTMarketPlace__NoRefundAmountFound();
 error PTNFTMarketPlace__FailToRefundAmountFound();
-error PTNFTMarketPlace__MinPriceGreaterThenZeroWei();
+error PTNFTMarketPlace__ZeroExpiredNoOfDaysAndMinPrice();
 error PTNFTMarketPlace__PermissionRequired();
 error PTNFTMarketPlace__MarketItemExpired();
 error PTNFTMarketPlace__OfferTimeExpired();
@@ -37,6 +37,9 @@ error PTNFTMarketPlace__FixedPirceMarketItem();
 error PTNFTMarketPlace__NoTheOwnerOfNFT();
 error PTNFTMarketPlace__ItemIdInvalid();
 error PTNFTMarketPlace__ItemMustBeOnMarket();
+error PTNFTMarketPlace__ListingFeeNotZero();
+error PTNFTMarketPlace__NFTContractAddressIsRequired();
+error PTNFTMarketPlace__ExpiringNoDaysNotZero();
 
 struct NFTVoucher {
     /// @notice The id of the token to be redeemed. Must be unique - if another token with this ID already exists, the redeem function will revert.

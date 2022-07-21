@@ -8,7 +8,6 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "./pharmaTrace-NFT.sol";
 import "./helper.sol";
-import "hardhat/console.sol";
 
 /**@title A Pharmatrace  NFT MarketPlace contract
  * @author Touqeer Shah
@@ -24,7 +23,7 @@ contract PTNFTMarketPlace is ReentrancyGuard {
     Counters.Counter private _itemSoldCounter;
     Counters.Counter private _totalOfferOnMarketPlace;
     address payable immutable i_marketowner;
-    uint256 private s_listingFee = 0.025 ether;
+    uint256 private s_listingFee = 25; // 2.5
     address private s_nftContractAddress;
     mapping(uint256 => Offer) private s_offers;
     mapping(uint256 => Offer) private s_marketOffers;
@@ -53,35 +52,8 @@ contract PTNFTMarketPlace is ReentrancyGuard {
     event BuyMarketPlaceItem(uint256 indexed tokenId, Offer indexed offer);
 
     // Event MarketPlace
-    event MarketItemCreated(
-        uint256 indexed id,
-        address indexed nftContract,
-        uint256 indexed tokenId,
-        uint256 minPrice,
-        uint256 maxPrice,
-        bool isFixedPrice,
-        uint256 startAt,
-        uint256 expiresAt,
-        State state
-    );
-    event MarketItemSold(
-        uint256 indexed id,
-        address indexed nftContract,
-        uint256 indexed tokenId,
-        address seller,
-        address buyer,
-        uint256 price,
-        State state
-    );
-    event MarketItemDelete(
-        uint256 indexed id,
-        address indexed nftContract,
-        uint256 indexed tokenId,
-        address seller,
-        address buyer,
-        uint256 price,
-        State state
-    );
+    event MarketItemCreated(uint256 indexed id, MarketItem indexed marketItem);
+    event MarketItemDelete(uint256 indexed id, MarketItem indexed marketItem);
 
     //// constructor
     constructor() {
@@ -111,67 +83,98 @@ contract PTNFTMarketPlace is ReentrancyGuard {
         payable
         nonReentrant
     {
+        if (numberOfDays <= 0) revert PTNFTMarketPlace__ExpiringNoDaysNotZero();
         PTNFT(s_nftContractAddress)._verify(voucher);
         // verify the voucher from PTNFT
-        address oldOfferBy;
-        uint256 oldOfferValue;
-        bool isExtraAmount;
+        address oldOfferBy = address(0);
+        uint256 oldOfferValue = 0;
         /* address signer =*/
         Offer memory offer = getOffer(voucher.tokenId);
-        (oldOfferValue, oldOfferBy, isExtraAmount) = checkRequirment(
-            offer.status,
-            offer.expiresAt,
-            offer.offerAmount,
-            offer.offerBy,
-            voucher.minPrice,
-            voucher.maxPrice
+        checkRequirment(offer.status, offer.expiresAt, offer.offerAmount, voucher.minPrice);
+        if (offer.expiresAt != 0 && offer.offerAmount != 0) {
+            s_refundOfferAmounts[offer.offerBy] += offer.offerAmount;
+            oldOfferValue = offer.offerAmount;
+            oldOfferBy = offer.offerBy;
+        }
+
+        // offer.tokenId = voucher.tokenId;
+        // offer.offerAmount = (voucher.maxPrice < msg.value)
+        //     ? (msg.value - (msg.value - voucher.maxPrice))
+        //     : msg.value;
+        // offer.totalOffers++;
+        // offer.startAt = block.timestamp;
+        // offer.expiresAt = block.timestamp + (numberOfDays * 1 days);
+        // offer.offerBy = payable(msg.sender);
+        // offer.status = OfferState.OPEN;
+        s_offers[voucher.tokenId] = setOfferStruct(
+            offer,
+            voucher.tokenId,
+            voucher.maxPrice,
+            msg.value,
+            msg.sender,
+            numberOfDays
         );
-        offer.tokenId = voucher.tokenId;
-        offer.offerAmount = isExtraAmount
-            ? (msg.value - (msg.value - voucher.maxPrice))
-            : msg.value;
+        _totalOfferOnMarketPlace.increment();
+        if ((voucher.maxPrice < msg.value)) {
+            (bool success, ) = msg.sender.call{value: (msg.value - voucher.maxPrice)}("");
+            if (!success) {
+                revert PTNFTMarketPlace__RevertExceedAmount();
+            }
+        }
+        emit RefundOfferAmount(oldOfferBy, oldOfferValue);
+        emit CreateOffer(voucher.tokenId, offer);
+    }
+
+    function setOfferStruct(
+        Offer memory offer,
+        uint256 tokenId,
+        uint256 maxPrice,
+        uint256 value,
+        address sender,
+        uint256 numberOfDays
+    ) internal view returns (Offer memory) {
+        offer.tokenId = tokenId;
+        offer.offerAmount = (maxPrice < value) ? (value - (value - maxPrice)) : value;
         offer.totalOffers++;
         offer.startAt = block.timestamp;
         offer.expiresAt = block.timestamp + (numberOfDays * 1 days);
-        offer.offerBy = payable(msg.sender);
+        offer.offerBy = payable(sender);
         offer.status = OfferState.OPEN;
-        s_offers[voucher.tokenId] = offer;
-        _totalOfferOnMarketPlace.increment();
-        emit RefundOfferAmount(oldOfferBy, oldOfferValue);
-        emit CreateOffer(voucher.tokenId, offer);
+        return offer;
     }
 
     /// @notice this function is used to buy Lazz NFT and mint it by pay the maxPrice of that NFT.
     /// @param voucher A signed NFTVoucher that describes the NFT to be redeemed.
     function buyLazzNFT(NFTVoucher calldata voucher) public payable nonReentrant {
         // verify the voucher from PTNFT
-        address oldOfferBy;
-        uint256 oldOfferValue;
-        bool isExtraAmount;
-
+        address oldOfferBy = address(0);
+        uint256 oldOfferValue = 0;
+        bool success;
         address signer = PTNFT(s_nftContractAddress)._verify(voucher);
         Offer memory offer = getOffer(voucher.tokenId);
-        (oldOfferValue, oldOfferBy, isExtraAmount) = checkRequirment(
-            offer.status,
-            offer.expiresAt,
-            offer.offerAmount,
-            offer.offerBy,
-            voucher.minPrice,
-            voucher.maxPrice
-        );
+        checkRequirment(offer.status, offer.expiresAt, offer.offerAmount, voucher.minPrice);
+        if (offer.expiresAt != 0 && offer.offerAmount != 0) {
+            s_refundOfferAmounts[offer.offerBy] += offer.offerAmount;
+            oldOfferValue = offer.offerAmount;
+            oldOfferBy = offer.offerBy;
+        }
         if (voucher.maxPrice > msg.value) revert PTNFTMarketPlace__InsufficientFund();
-
-        PTNFT(s_nftContractAddress).redeem(msg.sender, voucher);
-
         delete s_offers[voucher.tokenId];
         s_offers[voucher.tokenId].status = OfferState.CLOSE;
+        PTNFT(s_nftContractAddress).redeem(msg.sender, voucher);
 
-        (bool success, ) = payable(i_marketowner).call{value: s_listingFee}("");
+        if (voucher.maxPrice < msg.value) {
+            (success, ) = msg.sender.call{value: (msg.value - voucher.maxPrice)}("");
+            if (!success) {
+                revert PTNFTMarketPlace__RevertExceedAmount();
+            }
+        }
+        (success, ) = payable(i_marketowner).call{value: getPercentage(msg.value)}("");
         if (!success) {
             revert PTNFTMarketPlace__FailToTransferListingFee();
         }
         // uint256 remainAmount = (offerAmount - s_listingFee);
-        (success, ) = payable(signer).call{value: msg.value - s_listingFee}("");
+        (success, ) = payable(signer).call{value: msg.value - getPercentage(msg.value)}("");
         if (!success) {
             revert PTNFTMarketPlace__FailToTransferNFTOfferAmount();
         }
@@ -188,23 +191,25 @@ contract PTNFTMarketPlace is ReentrancyGuard {
             revert PTNFTMarketPlace__OnlyOwnerAcceptOffer();
         }
         Offer memory offer = getOffer(voucher.tokenId);
-        if (offer.expiresAt < block.timestamp) {
+        if (offer.expiresAt < (block.timestamp + 40)) {
             revert PTNFTMarketPlace__OfferTimeExpired();
         }
+
+        delete s_offers[voucher.tokenId];
+        s_offers[voucher.tokenId].status = OfferState.CLOSE;
+
+        delete s_offers[voucher.tokenId];
+        s_offers[voucher.tokenId].status = OfferState.CLOSE;
         PTNFT(s_nftContractAddress).redeem(offer.offerBy, voucher);
 
-        delete s_offers[voucher.tokenId];
-        s_offers[voucher.tokenId].status = OfferState.CLOSE;
-
-        delete s_offers[voucher.tokenId];
-        s_offers[voucher.tokenId].status = OfferState.CLOSE;
-
-        (bool success, ) = payable(i_marketowner).call{value: s_listingFee}("");
+        (bool success, ) = payable(i_marketowner).call{value: getPercentage(offer.offerAmount)}("");
         if (!success) {
             revert PTNFTMarketPlace__FailToTransferListingFee();
         }
         // uint256 remainAmount = (offerAmount - s_listingFee);
-        (success, ) = payable(signer).call{value: offer.offerAmount - s_listingFee}("");
+        (success, ) = payable(signer).call{
+            value: offer.offerAmount - getPercentage(offer.offerAmount)
+        }("");
         if (!success) {
             revert PTNFTMarketPlace__FailToTransferNFTOfferAmount();
         }
@@ -218,7 +223,7 @@ contract PTNFTMarketPlace is ReentrancyGuard {
         address signer = PTNFT(s_nftContractAddress)._verify(voucher);
         if (signer != msg.sender) revert PTNFTMarketPlace__OnlyOwnerAcceptOffer();
         Offer memory offer = getOffer(voucher.tokenId);
-        if (offer.expiresAt < block.timestamp) {
+        if (offer.expiresAt < (block.timestamp + 40)) {
             revert PTNFTMarketPlace__OfferTimeExpired();
         }
         delete s_offers[voucher.tokenId];
@@ -245,7 +250,8 @@ contract PTNFTMarketPlace is ReentrancyGuard {
         bool isFixedPrice,
         uint256 expiresAt
     ) public nonReentrant {
-        if (minPrice <= 0) revert PTNFTMarketPlace__MinPriceGreaterThenZeroWei();
+        if (minPrice <= 0 || expiresAt <= 0)
+            revert PTNFTMarketPlace__ZeroExpiredNoOfDaysAndMinPrice();
         if (PTNFT(s_nftContractAddress).getApproved(tokenId) != address(this))
             revert PTNFTMarketPlace__PermissionRequired();
         if (PTNFT(s_nftContractAddress).ownerOf(tokenId) != msg.sender)
@@ -268,17 +274,7 @@ contract PTNFTMarketPlace is ReentrancyGuard {
             State.Created
         );
 
-        emit MarketItemCreated(
-            id,
-            s_nftContractAddress,
-            tokenId,
-            minPrice,
-            maxPrice,
-            isFixedPrice,
-            block.timestamp,
-            isFixedPrice ? 0 : block.timestamp + expiresAt,
-            State.Created
-        );
+        emit MarketItemCreated(id, marketItems[id]);
     }
 
     /**
@@ -301,50 +297,57 @@ contract PTNFTMarketPlace is ReentrancyGuard {
             revert PTNFTMarketPlace__NoTheOwnerOfNFT();
 
         item.state = State.Inactive;
-        PTNFT(s_nftContractAddress).revertApprovalForAll(address(this), item.tokenId);
-        emit MarketItemDelete(
-            itemId,
-            item.nftContract,
-            item.tokenId,
-            item.seller,
-            address(0),
-            0,
-            State.Inactive
-        );
+        PTNFT(s_nftContractAddress).revertApprovalForAll(address(0), item.tokenId);
+        emit MarketItemDelete(itemId, item);
     }
 
     /// @notice place offer for marketplace item.
     /// @param id  which record.
     /// @param numberOfDays  offer expired time in days.
     function createOffer(uint16 id, uint16 numberOfDays) public payable nonReentrant {
+        if (numberOfDays <= 0) revert PTNFTMarketPlace__ExpiringNoDaysNotZero();
+
         MarketItem storage item = checkRequirmentMarketPlace(id);
         if (item.isFixedPrice) revert PTNFTMarketPlace__FixedPirceMarketItem();
 
-        if (item.expiresAt < block.timestamp) {
+        if (item.expiresAt < (block.timestamp + 40)) {
             revert PTNFTMarketPlace__MarketItemExpired();
         }
-        address oldOfferBy;
-        uint256 oldOfferValue;
-        bool isExtraAmount;
+        address oldOfferBy = address(0);
+        uint256 oldOfferValue = 0;
         /* address signer =*/
         Offer memory offer = getMarketOffer(item.tokenId);
-        (oldOfferValue, oldOfferBy, isExtraAmount) = checkRequirment(
-            offer.status,
-            offer.expiresAt,
-            offer.offerAmount,
-            offer.offerBy,
-            item.minPrice,
-            item.maxPrice
+        checkRequirment(offer.status, offer.expiresAt, offer.offerAmount, item.minPrice);
+        if (offer.expiresAt != 0 && offer.offerAmount != 0) {
+            s_refundOfferAmounts[offer.offerBy] += offer.offerAmount;
+            oldOfferValue = offer.offerAmount;
+            oldOfferBy = offer.offerBy;
+        }
+
+        // offer.tokenId = item.tokenId;
+        // offer.offerAmount = (item.maxPrice < msg.value)
+        //     ? (msg.value - (msg.value - item.maxPrice))
+        //     : msg.value;
+        // offer.totalOffers++;
+        // offer.startAt = block.timestamp;
+        // offer.expiresAt = block.timestamp + (numberOfDays * 1 days);
+        // offer.offerBy = payable(msg.sender);
+        // offer.status = OfferState.OPEN;
+        s_marketOffers[item.tokenId] = setOfferStruct(
+            offer,
+            item.tokenId,
+            item.maxPrice,
+            msg.value,
+            msg.sender,
+            numberOfDays
         );
-        offer.tokenId = item.tokenId;
-        offer.offerAmount = isExtraAmount ? (msg.value - (msg.value - item.maxPrice)) : msg.value;
-        offer.totalOffers++;
-        offer.startAt = block.timestamp;
-        offer.expiresAt = block.timestamp + (numberOfDays * 1 days);
-        offer.offerBy = payable(msg.sender);
-        offer.status = OfferState.OPEN;
-        s_marketOffers[item.tokenId] = offer;
         _totalOfferOnMarketPlace.increment();
+        if ((item.maxPrice < msg.value)) {
+            (bool success, ) = msg.sender.call{value: (msg.value - item.maxPrice)}("");
+            if (!success) {
+                revert PTNFTMarketPlace__RevertExceedAmount();
+            }
+        }
         emit RefundOfferAmount(oldOfferBy, oldOfferValue);
         emit CreateOffer(item.tokenId, offer);
     }
@@ -353,41 +356,43 @@ contract PTNFTMarketPlace is ReentrancyGuard {
     /// @param id  which record.
     function buy(uint256 id) public payable nonReentrant {
         // verify the voucher from PTNFT
-        address oldOfferBy;
-        uint256 oldOfferValue;
-        bool isExtraAmount;
+        address oldOfferBy = address(0);
+        uint256 oldOfferValue = 0;
+        bool success;
         MarketItem storage item = checkRequirmentMarketPlace(id);
 
-        if (item.expiresAt < block.timestamp) {
+        if (item.expiresAt < (block.timestamp + 40)) {
             revert PTNFTMarketPlace__MarketItemExpired();
         }
         /* address signer =*/
 
         Offer memory offer = getMarketOffer(item.tokenId);
-        (oldOfferValue, oldOfferBy, isExtraAmount) = checkRequirment(
-            offer.status,
-            offer.expiresAt,
-            offer.offerAmount,
-            offer.offerBy,
-            item.minPrice,
-            item.maxPrice
-        );
+        checkRequirment(offer.status, offer.expiresAt, offer.offerAmount, item.minPrice);
+        if (offer.expiresAt != 0 && offer.offerAmount != 0) {
+            s_refundOfferAmounts[offer.offerBy] += offer.offerAmount;
+            oldOfferValue = offer.offerAmount;
+            oldOfferBy = offer.offerBy;
+        }
         if (item.maxPrice > msg.value) revert PTNFTMarketPlace__InsufficientFund();
-
-        PTNFT(s_nftContractAddress).transferFrom(item.seller, msg.sender, item.tokenId);
-
         item.buyer = payable(msg.sender);
         item.state = State.Release;
 
         delete s_marketOffers[item.tokenId];
         s_marketOffers[item.tokenId].status = OfferState.CLOSE;
+        PTNFT(s_nftContractAddress).transferFrom(item.seller, msg.sender, item.tokenId);
 
-        (bool success, ) = payable(i_marketowner).call{value: s_listingFee}("");
+        if ((item.maxPrice < msg.value)) {
+            (success, ) = msg.sender.call{value: (msg.value - item.maxPrice)}("");
+            if (!success) {
+                revert PTNFTMarketPlace__RevertExceedAmount();
+            }
+        }
+        (success, ) = payable(i_marketowner).call{value: getPercentage(msg.value)}("");
         if (!success) {
             revert PTNFTMarketPlace__FailToTransferListingFee();
         }
         // uint256 remainAmount = (offerAmount - s_listingFee);
-        (success, ) = payable(item.seller).call{value: msg.value - s_listingFee}("");
+        (success, ) = payable(item.seller).call{value: msg.value - getPercentage(msg.value)}("");
         if (!success) {
             revert PTNFTMarketPlace__FailToTransferNFTOfferAmount();
         }
@@ -400,15 +405,15 @@ contract PTNFTMarketPlace is ReentrancyGuard {
     /// @param id  which record.
     function rejectOffer(uint256 id) public payable nonReentrant {
         MarketItem storage item = checkRequirmentMarketPlace(id);
-        if (item.expiresAt < block.timestamp) {
+        if (item.expiresAt < (block.timestamp + 40)) {
             revert PTNFTMarketPlace__MarketItemExpired();
         }
         if (item.seller != msg.sender) revert PTNFTMarketPlace__OnlyOwnerAcceptOffer();
         Offer memory offer = getMarketOffer(item.tokenId);
-        if (offer.startAt == 0) {
+        if (offer.startAt <= 0) {
             revert PTNFTMarketPlace__NoOfferExist();
         }
-        if (offer.expiresAt < block.timestamp) {
+        if (offer.expiresAt < (block.timestamp + 40)) {
             revert PTNFTMarketPlace__OfferTimeExpired();
         }
         delete s_marketOffers[item.tokenId];
@@ -424,16 +429,16 @@ contract PTNFTMarketPlace is ReentrancyGuard {
     function acceptOffer(uint256 id) public payable nonReentrant {
         MarketItem storage item = checkRequirmentMarketPlace(id);
 
-        if (item.expiresAt < block.timestamp) {
+        if (item.expiresAt < (block.timestamp + 40)) {
             revert PTNFTMarketPlace__MarketItemExpired();
         }
         if (item.seller != msg.sender) revert PTNFTMarketPlace__OnlyOwnerAcceptOffer();
         Offer memory offer = getMarketOffer(item.tokenId);
 
-        if (offer.startAt == 0) {
+        if (offer.startAt <= 0) {
             revert PTNFTMarketPlace__NoOfferExist();
         }
-        if (offer.expiresAt < block.timestamp) {
+        if (offer.expiresAt < (block.timestamp + 40)) {
             revert PTNFTMarketPlace__OfferTimeExpired();
         }
         item.buyer = payable(offer.offerBy);
@@ -443,12 +448,14 @@ contract PTNFTMarketPlace is ReentrancyGuard {
         s_marketOffers[item.tokenId].status = OfferState.CLOSE;
         PTNFT(s_nftContractAddress).transferFrom(item.seller, offer.offerBy, item.tokenId);
 
-        (bool success, ) = payable(i_marketowner).call{value: s_listingFee}("");
+        (bool success, ) = payable(i_marketowner).call{value: getPercentage(offer.offerAmount)}("");
         if (!success) {
             revert PTNFTMarketPlace__FailToTransferListingFee();
         }
         // uint256 remainAmount = (offerAmount - s_listingFee);
-        (success, ) = payable(item.seller).call{value: offer.offerAmount - s_listingFee}("");
+        (success, ) = payable(item.seller).call{
+            value: offer.offerAmount - getPercentage(offer.offerAmount)
+        }("");
         if (!success) {
             revert PTNFTMarketPlace__FailToTransferNFTOfferAmount();
         }
@@ -468,66 +475,21 @@ contract PTNFTMarketPlace is ReentrancyGuard {
     }
 
     /// @notice this is an helper function optimize the code .
-    function acceptationProcess(
-        uint256 tokenId,
-        address seller,
-        uint256 offerAmount
-    ) public payable {
-        delete s_offers[tokenId];
-        s_offers[tokenId].status = OfferState.CLOSE;
-
-        (bool success, ) = payable(i_marketowner).call{value: s_listingFee}("");
-        if (!success) {
-            revert PTNFTMarketPlace__FailToTransferListingFee();
-        }
-        // uint256 remainAmount = (offerAmount - s_listingFee);
-        (success, ) = payable(seller).call{value: offerAmount - s_listingFee}("");
-        if (!success) {
-            revert PTNFTMarketPlace__FailToTransferNFTOfferAmount();
-        }
-        _itemSoldCounter.increment();
-    }
-
-    /// @notice this is an helper function optimize the code .
     function checkRequirment(
         OfferState status,
         uint256 expiresAt,
         uint256 offerAmount,
-        address offerBy,
-        uint256 minPrice,
-        uint256 maxPrice
-    )
-        public
-        payable
-        returns (
-            uint256,
-            address,
-            bool
-        )
-    {
-        address oldOfferBy;
-        uint256 oldOfferValue;
-        if (status == OfferState.CLOSE) {
+        uint256 minPrice
+    ) internal {
+        if (status != OfferState.OPEN) {
             revert PTNFTMarketPlace__NotAvailableForOffer();
         }
-        if (expiresAt > block.timestamp && offerAmount > msg.value) {
+        if (expiresAt > (block.timestamp + 40) && offerAmount > msg.value) {
             revert PTNFTMarketPlace__NotExceedCurrentOffer();
-        } else if (expiresAt != 0 && offerAmount != 0) {
-            s_refundOfferAmounts[offerBy] += offerAmount;
-            oldOfferValue = offerAmount;
-            oldOfferBy = offerBy;
         }
         if (minPrice > msg.value) {
             revert PTNFTMarketPlace__InsufficientFund();
         }
-        bool isExtraAmount = (maxPrice < msg.value);
-        if (isExtraAmount) {
-            (bool success, ) = msg.sender.call{value: (msg.value - maxPrice)}("");
-            if (!success) {
-                revert PTNFTMarketPlace__RevertExceedAmount();
-            }
-        }
-        return (oldOfferValue, oldOfferBy, isExtraAmount);
     }
 
     /// @notice this allow Buyer to withdraw from their offer and get back it amount .
@@ -560,12 +522,14 @@ contract PTNFTMarketPlace is ReentrancyGuard {
         return s_listingFee;
     }
 
-    function getContractBlanace() public view returns (uint256) {
-        return address(this).balance;
+    /// @notice it will return percentage of profite transfer to market place owner .
+
+    function getPercentage(uint256 amount) internal view returns (uint256) {
+        return (s_listingFee * amount) / 1000;
     }
 
-    function getBlockTime() public view returns (uint256) {
-        return block.timestamp;
+    function getContractBlanace() public view returns (uint256) {
+        return address(this).balance;
     }
 
     function getOffer(uint256 tokenId) public view returns (Offer memory) {
@@ -585,6 +549,8 @@ contract PTNFTMarketPlace is ReentrancyGuard {
     }
 
     function setNftContractAddress(address nftContractAddress) public onlyOwner {
+        if (nftContractAddress == address(0))
+            revert PTNFTMarketPlace__NFTContractAddressIsRequired();
         s_nftContractAddress = nftContractAddress;
     }
 
@@ -592,13 +558,10 @@ contract PTNFTMarketPlace is ReentrancyGuard {
         return s_nftContractAddress;
     }
 
-    // function getSign(NFTVoucher calldata voucher) public view returns (bool, address) {
-    //     address signer = PTNFT(s_nftContractAddress)._verify(voucher);
-
-    //     return ((signer == msg.sender), msg.sender);
-    // }
-
+    /// @notice it is percentage of profite fee charge by marketplace on sale it should be one decimal number 1.2 = 12, 2.6 =26 ,100=10   .
+    // it will not more the 10 percentage
     function setlistingFee(uint256 listingFee) public onlyOwner {
+        if (listingFee > 0) revert PTNFTMarketPlace__ListingFeeNotZero();
         s_listingFee = listingFee;
     }
 

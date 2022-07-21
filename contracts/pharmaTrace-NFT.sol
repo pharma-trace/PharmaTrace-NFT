@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // 1. Pragma
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.8;
 
 // 2. Imports
 import "hardhat/console.sol";
@@ -24,22 +24,6 @@ error PTNFT__ONLYMARKETPLACE();
 contract PTNFT is ERC721URIStorage, EIP712, AccessControl, ReentrancyGuard {
     // State variables
     bytes32 private constant MINTER_ROLE = keccak256("MINTER_ROLE");
-
-    // /// @notice Represents an un-minted NFT, which has not yet been recorded into the blockchain. A signed voucher can be redeemed for a real NFT using the redeem function.
-    // struct NFTVoucher {
-    //     /// @notice The id of the token to be redeemed. Must be unique - if another token with this ID already exists, the redeem function will revert.
-    //     uint256 tokenId;
-    //     /// @notice The minimum price (in wei) that the NFT creator is willing to accept for the initial sale of this NFT.
-    //     uint256 minPrice;
-    //     /// @notice The maxmum price (in wei) that the NFT creator is willing to accept for the buy this NFT.
-    //     uint256 maxPrice;
-    //     /// @notice The metadata URI to associate with this token.
-    //     string uri;
-    //     /// @notice the EIP-712 signature of all other fields in the NFTVoucher struct. For a voucher to be valid, it must be signed by an account with the MINTER_ROLE.
-    //     bytes signature;
-    // }
-
-    // Events (we have none!)
 
     // Modifiers
     modifier onlyMarketPlace() {
@@ -66,7 +50,10 @@ contract PTNFT is ERC721URIStorage, EIP712, AccessControl, ReentrancyGuard {
     function redeem(
         address redeemer,
         NFTVoucher calldata voucher /*onlyMarketPlace*/
-    ) public payable onlyMarketPlace returns (uint256) {
+    )
+        external
+        onlyMarketPlace /*returns (uint256)*/
+    {
         // make sure signature is valid and get the address of the signer
         address signer = _verify(voucher);
 
@@ -76,7 +63,7 @@ contract PTNFT is ERC721URIStorage, EIP712, AccessControl, ReentrancyGuard {
 
         // transfer the token to the redeemer
         _safeTransfer(signer, redeemer, voucher.tokenId, "");
-        return voucher.tokenId;
+        // return voucher.tokenId;
     }
 
     /// @notice Returns a hash of the given NFTVoucher, prepared using EIP712 typed data hashing rules.

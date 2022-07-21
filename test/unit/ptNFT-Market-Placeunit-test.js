@@ -43,7 +43,7 @@ const { developmentChains } = require("../../helper.config")
                   maxPrice = ethers.utils.parseEther("0.5")
                   await expect(
                       PTNFTMarketPlace.createMarketItem(1, minPrice, maxPrice, true, 1)
-                  ).to.be.revertedWith("PTNFTMarketPlace__MinPriceGreaterThenZeroWei")
+                  ).to.be.revertedWith("PTNFTMarketPlace__ZeroExpiredNoOfDaysAndMinPrice")
               })
               it("check createMarketItem without approval of the owner", async function () {
                   const ptMinter = new PTMinter({ ptNFT, signer: minter })
@@ -1056,7 +1056,7 @@ const { developmentChains } = require("../../helper.config")
               it("check acceptOffer Buy NFT", async function () {
                   const ptMinter = new PTMinter({ ptNFT, signer: minter })
                   console.log("minter", minter.address)
-                  let sendEther = ethers.utils.parseEther("0.2")
+                  let sendEther = ethers.utils.parseEther("0.234")
                   let minPrice = ethers.utils.parseEther("0.1")
                   let maxPrice = ethers.utils.parseEther("0.5")
 
@@ -1075,6 +1075,7 @@ const { developmentChains } = require("../../helper.config")
                   maxPrice = ethers.utils.parseEther("0.5")
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(1, minPrice, maxPrice, false, 2)
+                  console.log("sendEther", sendEther.toString())
                   const txResponse = await PTNFTMarketPlace.createOffer(1, 1, {
                       value: sendEther,
                   }) // emit RefundOfferAmount
@@ -1166,7 +1167,6 @@ const { developmentChains } = require("../../helper.config")
                       "PTNFTMarketPlace__ItemIdInvalid"
                   )
               })
-
               it("check rejectOffer fail on market item is close", async function () {
                   const ptMinter = new PTMinter({ ptNFT, signer: minter })
                   console.log("minter", minter.address)
@@ -1259,7 +1259,6 @@ const { developmentChains } = require("../../helper.config")
                       })
                   ).to.be.revertedWith("PTNFTMarketPlace__OnlyOwnerAcceptOffer")
               })
-
               it("check rejectOffer fail on offer expired", async function () {
                   const ptMinter = new PTMinter({ ptNFT, signer: minter })
                   console.log("minter", minter.address)
