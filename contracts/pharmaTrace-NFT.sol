@@ -33,6 +33,8 @@ contract PTNFT is ERC721URIStorage, EIP712, AccessControl, ReentrancyGuard {
         if (!hasRole(MINTER_ROLE, msg.sender)) revert PTNFT__ONLYMARKETPLACE();
         _;
     }
+    // Events Lazz NFT
+    event RedeemVoucher(address indexed signer, uint256 indexed tokenId, address indexed redeemer);
 
     constructor(
         address marketPlace,
@@ -63,6 +65,7 @@ contract PTNFT is ERC721URIStorage, EIP712, AccessControl, ReentrancyGuard {
 
         // transfer the token to the redeemer
         _safeTransfer(signer, redeemer, voucher.tokenId, "");
+        emit RedeemVoucher(signer, voucher.tokenId, redeemer);
         // return voucher.tokenId;
     }
 
@@ -111,6 +114,7 @@ contract PTNFT is ERC721URIStorage, EIP712, AccessControl, ReentrancyGuard {
     /// @notice used to revert the approved on delete.
 
     function revertApprovalForAll(address operator, uint256 tokenId) public nonReentrant {
+        if (!_isApprovedOrOwner(msg.sender, tokenId)) revert PTNFT__NotOwner();
         _approve(operator, tokenId);
     }
 

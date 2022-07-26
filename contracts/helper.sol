@@ -18,28 +18,22 @@ enum FetchOperator {
 // 3. Interfaces, Libraries, Contracts
 error PTNFTMarketPlace__NotOwner();
 error PTNFTMarketPlace__InsufficientFund();
-error PTNFTMarketPlace__NotExceedCurrentOffer();
-error PTNFTMarketPlace__RevertExceedAmount();
-error PTNFTMarketPlace__OnlyOwnerAcceptOffer();
-error PTNFTMarketPlace__FirstPlaceOffer();
 error PTNFTMarketPlace__NotAvailableForOffer();
-error PTNFTMarketPlace__FailToTransferListingFee();
-error PTNFTMarketPlace__FailToTransferNFTOfferAmount();
-error PTNFTMarketPlace__NoRefundAmountFound();
-error PTNFTMarketPlace__FailToRefundAmountFound();
+error PTNFTMarketPlace__FailToWithDrawAmount();
+error PTNFTMarketPlace__NoAmountForWithDraw();
 error PTNFTMarketPlace__ZeroExpiredNoOfDaysAndMinPrice();
 error PTNFTMarketPlace__PermissionRequired();
 error PTNFTMarketPlace__MarketItemExpired();
 error PTNFTMarketPlace__OfferTimeExpired();
 error PTNFTMarketPlace__NoOfferExist();
+error PTNFTMarketPlace__AmountNoExceedMaxPrice();
 
 error PTNFTMarketPlace__FixedPirceMarketItem();
-error PTNFTMarketPlace__NoTheOwnerOfNFT();
-error PTNFTMarketPlace__ItemIdInvalid();
-error PTNFTMarketPlace__ItemMustBeOnMarket();
 error PTNFTMarketPlace__ListingFeeNotZero();
 error PTNFTMarketPlace__NFTContractAddressIsRequired();
 error PTNFTMarketPlace__ExpiringNoDaysNotZero();
+error PTNFTMarketPlace__AlreadyListed(address, uint256);
+error PTNFTMarketPlace__ItemIdInvalid(address, uint256);
 
 struct NFTVoucher {
     /// @notice The id of the token to be redeemed. Must be unique - if another token with this ID already exists, the redeem function will revert.
@@ -77,8 +71,6 @@ struct Offer {
 }
 
 struct MarketItem {
-    uint256 id;
-    address nftContract;
     uint256 tokenId;
     address payable seller;
     address payable buyer;
@@ -90,4 +82,11 @@ struct MarketItem {
     /// @notice The metadata URI to associate with this token.
     uint256 expiresAt;
     State state;
+}
+
+struct EIP712Domain {
+    string name;
+    string version;
+    uint256 chainId;
+    address verifyingContract;
 }
