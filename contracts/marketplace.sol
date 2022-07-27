@@ -20,12 +20,12 @@ contract PTNFTMarketPlace is ReentrancyGuard {
     using Counters for Counters.Counter;
 
     // State variables
+    address private s_nftContractAddress;
     Counters.Counter private _itemCounter;
     Counters.Counter private _itemSoldCounter;
     Counters.Counter private _totalOfferOnMarketPlace;
     address payable immutable i_marketowner;
     uint256 private s_listingFee = 25; // 2.5%
-    address private s_nftContractAddress;
     mapping(uint256 => Offer) private s_offers;
     mapping(uint256 => Offer) private s_marketOffers;
     mapping(address => uint256) private s_amounts;
