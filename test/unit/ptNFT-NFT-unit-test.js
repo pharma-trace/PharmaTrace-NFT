@@ -127,7 +127,7 @@ const { developmentChains } = require("../../helper.config")
                       value: sendEther,
                   }) // emit WithDrawAmount
                   const txReceipt = await txResponse.wait(1) // waits 1 block
-                  var res = await PTNFTMarketPlace.getOffer(1)
+                  var res = await PTNFTMarketPlace.getOffer(ptNFT.address, 1)
                   console.log(
                       "res",
                       res.tokenId.toString(),
@@ -160,7 +160,7 @@ const { developmentChains } = require("../../helper.config")
                       value: sendEther,
                   }) // emit WithDrawAmount
                   const txReceipt = await txResponse.wait(1) // waits 1 block
-                  var res = await PTNFTMarketPlace.getOffer(1)
+                  var res = await PTNFTMarketPlace.getOffer(ptNFT.address, 1)
                   //   var blocktime = await PTNFTMarketPlace.getBlockTime()
 
                   console.log("res", res.startAt.toString(), res.expiresAt.toString())
@@ -196,13 +196,13 @@ const { developmentChains } = require("../../helper.config")
                   await txResponse.wait(1) // waits 1 block
                   //   var blocktime = await PTNFTMarketPlace.getBlockTime()
                   PTNFTMarketPlace = PTNFTMarketPlaceContract.connect(redeemer)
-                  var res = await PTNFTMarketPlace.getOffer(1)
+                  var res = await PTNFTMarketPlace.getOffer(ptNFT.address, 1)
                   console.log("res", res.offerBy.toString(), res.offerAmount.toString())
                   sendEther = ethers.utils.parseEther("0.45")
                   txResponse = await PTNFTMarketPlace.createOfferFoRLazzNFT(voucher, 1, {
                       value: sendEther,
                   })
-                  res = await PTNFTMarketPlace.getOffer(1)
+                  res = await PTNFTMarketPlace.getOffer(ptNFT.address, 1)
                   //   console.log("txResponse", txResponse)
                   console.log("res", res.offerBy.toString(), res.offerAmount.toString())
                   assert.equal(res.offerBy, redeemer.address)
@@ -341,7 +341,7 @@ const { developmentChains } = require("../../helper.config")
                       PTNFTMarketPlace.buyLazzNFT(voucher, {
                           value: sendEther,
                       })
-                  ).to.emit(PTNFTMarketPlace, "BuyLazzNFT") // transfer from null address to minter
+                  ).to.emit(PTNFTMarketPlace, "BuyNFT") // transfer from null address to minter
 
                   //   var res = await ptNFT.balanceOf(redeemer.address)
                   //   var resURI = await ptNFT.tokenURI(1)
@@ -428,7 +428,7 @@ const { developmentChains } = require("../../helper.config")
                       value: sendEther,
                   })
                   var txReceipt = await txResponse.wait(1) // waits 1 block
-                  var offer = await PTNFTMarketPlace.getOffer(1)
+                  var offer = await PTNFTMarketPlace.getOffer(ptNFT.address, 1)
                   console.log("offer", offer.status)
                   assert.equal(offer.status.toString(), "1")
               })
@@ -603,7 +603,7 @@ const { developmentChains } = require("../../helper.config")
                   var txReceipt = await txResponse.wait(1) // waits 1 block
                   res = await ptNFT.balanceOf(redeemer.address)
                   console.log("res", res.toString())
-                  var offer = await PTNFTMarketPlace.getOffer(1)
+                  var offer = await PTNFTMarketPlace.getOffer(ptNFT.address, 1)
                   console.log("offer", offer.status)
                   assert.equal(offer.status.toString(), "1")
               })
@@ -684,8 +684,8 @@ const { developmentChains } = require("../../helper.config")
               })
           })
 
-          describe("PTNFTMarketPlace withDrawFromOffer ", function () {
-              it("check withDrawFromOffer fail when try to get amount without place any offer", async function () {
+          describe("PTNFTMarketPlace withDrawOfferFromLazzMint ", function () {
+              it("check withDrawOfferFromLazzMint fail when try to get amount without place any offer", async function () {
                   const ptMinter = new PTMinter({ ptNFT, signer: minter })
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
@@ -705,11 +705,11 @@ const { developmentChains } = require("../../helper.config")
                   PTNFTMarketPlace = PTNFTMarketPlaceContract.connect(redeemer)
                   //   var res = await PTNFTMarketPlace.getSign(voucher)
                   //   console.log(res)
-                  await expect(PTNFTMarketPlace.withDrawFromOffer(1)).to.be.revertedWith(
-                      "PTNFTMarketPlace__NoAmountForWithDraw"
-                  )
+                  await expect(
+                      PTNFTMarketPlace.withDrawOfferFromLazzMint(ptNFT.address, 1)
+                  ).to.be.revertedWith("PTNFTMarketPlace__PermissionRequired")
               })
-              it("check withDrawFromOffer amount is return in account", async function () {
+              it("check withDrawOfferFromLazzMint amount is return in account", async function () {
                   const ptMinter = new PTMinter({ ptNFT, signer: minter })
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
@@ -730,7 +730,10 @@ const { developmentChains } = require("../../helper.config")
                   var { gasUsed, effectiveGasPrice } = txReceipt
                   let withdrawGasCostCreateOfferFoRLazzNFT = gasUsed.mul(effectiveGasPrice)
 
-                  var txResponse1 = await PTNFTMarketPlace.withDrawFromOffer(1)
+                  var txResponse1 = await PTNFTMarketPlace.withDrawOfferFromLazzMint(
+                      ptNFT.address,
+                      1
+                  )
                   var txReceipt1 = await txResponse1.wait(1) // waits 1 block
                   var gasUsed1 = txReceipt1.gasUsed
                   var effectiveGasPrice1 = txReceipt1.effectiveGasPrice
@@ -762,10 +765,9 @@ const { developmentChains } = require("../../helper.config")
                       value: sendEther,
                   })
 
-                  await expect(PTNFTMarketPlace.withDrawFromOffer(1)).to.emit(
-                      PTNFTMarketPlace,
-                      "WithDrawFromOffer"
-                  ) // transfer from null address to minter
+                  await expect(
+                      PTNFTMarketPlace.withDrawOfferFromLazzMint(ptNFT.address, 1)
+                  ).to.emit(PTNFTMarketPlace, "WithDrawFromOffer") // transfer from null address to minter
               })
           })
 
@@ -800,7 +802,7 @@ const { developmentChains } = require("../../helper.config")
 
                   //   var blocktime = await PTNFTMarketPlace.getBlockTime()
                   PTNFTMarketPlace = PTNFTMarketPlaceContract.connect(redeemer)
-                  var res = await PTNFTMarketPlace.getOffer(1)
+                  var res = await PTNFTMarketPlace.getOffer(ptNFT.address, 1)
                   console.log("res", res.offerBy.toString(), res.offerAmount.toString())
                   sendEther = ethers.utils.parseEther("0.45")
                   txResponse = await PTNFTMarketPlace.createOfferFoRLazzNFT(voucher, 1, {
@@ -846,7 +848,7 @@ const { developmentChains } = require("../../helper.config")
 
                   //   var blocktime = await PTNFTMarketPlace.getBlockTime()
                   PTNFTMarketPlace = PTNFTMarketPlaceContract.connect(redeemer)
-                  var res = await PTNFTMarketPlace.getOffer(1)
+                  var res = await PTNFTMarketPlace.getOffer(ptNFT.address, 1)
                   console.log("res", res.offerBy.toString(), res.offerAmount.toString())
                   sendEther = ethers.utils.parseEther("0.45")
                   txResponse = await PTNFTMarketPlace.createOfferFoRLazzNFT(voucher, 1, {

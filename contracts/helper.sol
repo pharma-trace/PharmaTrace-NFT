@@ -10,18 +10,16 @@ enum OfferState {
     OPEN,
     CLOSE
 }
-enum FetchOperator {
-    ActiveItems,
-    MyPurchasedItems,
-    MyCreatedItems
-}
+
 // 3. Interfaces, Libraries, Contracts
 error PTNFTMarketPlace__NotOwner();
 error PTNFTMarketPlace__InsufficientFund();
 error PTNFTMarketPlace__NotAvailableForOffer();
 error PTNFTMarketPlace__FailToWithDrawAmount();
 error PTNFTMarketPlace__NoAmountForWithDraw();
-error PTNFTMarketPlace__ZeroExpiredNoOfDaysAndMinPrice();
+// error PTNFTMarketPlace__ZeroExpiredNoOfDaysAndMinPrice();
+error PTNFTMarketPlace__ValueShouldGreaterThenZero();
+
 error PTNFTMarketPlace__PermissionRequired();
 error PTNFTMarketPlace__MarketItemExpired();
 error PTNFTMarketPlace__OfferTimeExpired();
@@ -29,9 +27,9 @@ error PTNFTMarketPlace__NoOfferExist();
 error PTNFTMarketPlace__AmountNoExceedMaxPrice();
 
 error PTNFTMarketPlace__FixedPirceMarketItem();
-error PTNFTMarketPlace__ListingFeeNotZero();
+// error PTNFTMarketPlace__ListingFeeNotZero();
 error PTNFTMarketPlace__NFTContractAddressIsRequired();
-error PTNFTMarketPlace__ExpiringNoDaysNotZero();
+// error PTNFTMarketPlace__ExpiringNoDaysNotZero();
 error PTNFTMarketPlace__AlreadyListed(address, uint256);
 error PTNFTMarketPlace__ItemIdInvalid(address, uint256);
 
