@@ -76,12 +76,9 @@ contract PTNFT is ERC721URIStorage, EIP712, AccessControl, ReentrancyGuard {
             _hashTypedDataV4(
                 keccak256(
                     abi.encode(
-                        keccak256(
-                            "NFTVoucher(uint256 tokenId,uint256 minPrice,uint256 maxPrice,string uri)"
-                        ),
+                        keccak256("NFTVoucher(uint256 tokenId,uint256 minPrice,string uri)"),
                         voucher.tokenId,
                         voucher.minPrice,
-                        voucher.maxPrice,
                         keccak256(bytes(voucher.uri))
                     )
                 )

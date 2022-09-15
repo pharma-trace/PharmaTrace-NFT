@@ -24,7 +24,6 @@ error PTNFTMarketPlace__PermissionRequired();
 error PTNFTMarketPlace__MarketItemExpired();
 error PTNFTMarketPlace__OfferTimeExpired();
 error PTNFTMarketPlace__NoOfferExist();
-error PTNFTMarketPlace__AmountNoExceedMaxPrice();
 
 error PTNFTMarketPlace__FixedPirceMarketItem();
 // error PTNFTMarketPlace__ListingFeeNotZero();
@@ -38,8 +37,8 @@ struct NFTVoucher {
     uint256 tokenId;
     /// @notice The minimum price (in wei) that the NFT creator is willing to accept for the initial sale of this NFT.
     uint256 minPrice;
-    /// @notice The maxmum price (in wei) that the NFT creator is willing to accept for the buy this NFT.
-    uint256 maxPrice;
+    // /// @notice The maxmum price (in wei) that the NFT creator is willing to accept for the buy this NFT.
+    // uint256 maxPrice;
     /// @notice The metadata URI to associate with this token.
     string uri;
     /// @notice the EIP-712 signature of all other fields in the NFTVoucher struct. For a voucher to be valid, it must be signed by an account with the MINTER_ROLE.
@@ -73,7 +72,6 @@ struct MarketItem {
     address payable seller;
     address payable buyer;
     uint256 minPrice;
-    uint256 maxPrice;
     bool isFixedPrice;
     /// @notice The metadata URI to associate with this token.
     uint256 startAt;
