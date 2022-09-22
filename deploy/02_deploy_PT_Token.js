@@ -20,7 +20,7 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId, network }) 
     log(`PTNFT MarketPlace contract is deployed on local network to ${PTToken.address} ${chainId}`)
 
     if (!developmentChains.includes(network.name) && process.env.ETHERSCANAPIKEY) {
-        await verify(PTToken.address, [])
+        await verify(PTToken.address, [100000, "PT Token", "PTT"])
     }
 }
 module.exports.tags = ["token", "all"]
