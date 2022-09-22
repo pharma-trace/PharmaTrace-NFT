@@ -3,13 +3,15 @@
 pragma solidity ^0.8.8;
 
 // 2. Imports
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "./helper.sol";
 // 3. Interfaces, Libraries, Contracts
@@ -21,7 +23,7 @@ error PTNFT__ONLYMARKETPLACE();
  * @notice This contract is for creating a Lazy NFT
  * @dev Create MarketPlace for PhramaTrace
  */
-contract PTNFT is ERC721URIStorage, EIP712, AccessControl, ReentrancyGuard {
+contract PTNFT is ERC721URIStorage, EIP712, Pausable, Ownable, AccessControl, ReentrancyGuard {
     // State variables
     bytes32 private constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
@@ -76,7 +78,9 @@ contract PTNFT is ERC721URIStorage, EIP712, AccessControl, ReentrancyGuard {
             _hashTypedDataV4(
                 keccak256(
                     abi.encode(
-                        keccak256("NFTVoucher(uint256 tokenId,uint256 minPrice,string uri)"),
+                        keccak256(
+                            "NFTVoucher(uint256 tokenId,uint256 minPrice,uint256 pid,string uri)"
+                        ),
                         voucher.tokenId,
                         voucher.minPrice,
                         keccak256(bytes(voucher.uri))
@@ -137,4 +141,33 @@ contract PTNFT is ERC721URIStorage, EIP712, AccessControl, ReentrancyGuard {
         return
             ERC721.supportsInterface(interfaceId) || AccessControl.supportsInterface(interfaceId);
     }
+
+    function pauseContract() public onlyOwner {
+        _pause();
+    }
+
+    function unpauseContract() public onlyOwner {
+        _unpause();
+    }
+
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 tokenId
+    ) internal virtual override {
+        super._beforeTokenTransfer(from, to, tokenId);
+
+        require(!paused(), "ERC721Pausable: token transfer while paused");
+    }
+
+    // function _beforeConsecutiveTokenTransfer(
+    //     address from,
+    //     address to,
+    //     uint256 first,
+    //     uint96 size
+    // ) internal virtual override {
+    //     super._beforeConsecutiveTokenTransfer(from, to, first, size);
+
+    //     require(!paused(), "ERC721Pausable: token transfer while paused");
+    // }
 }

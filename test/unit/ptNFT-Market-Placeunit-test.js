@@ -26,12 +26,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -40,12 +39,12 @@ const { developmentChains } = require("../../helper.config")
                   })
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   minPrice = ethers.utils.parseEther("0.0")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await expect(
                       PTNFTMarketPlace.createMarketItem(
                           1,
                           minPrice,
-                          maxPrice,
+
                           true,
                           1,
                           ptNFT.address
@@ -57,12 +56,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -71,12 +69,12 @@ const { developmentChains } = require("../../helper.config")
                   })
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await expect(
                       PTNFTMarketPlace.createMarketItem(
                           1,
                           minPrice,
-                          maxPrice,
+
                           true,
                           1,
                           ptNFT.address
@@ -88,12 +86,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -103,12 +100,12 @@ const { developmentChains } = require("../../helper.config")
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await expect(
                       PTNFTMarketPlace.createMarketItem(
                           1,
                           minPrice,
-                          maxPrice,
+
                           true,
                           1,
                           ptNFT.address
@@ -120,12 +117,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   await PTNFTMarketPlace.createOfferFoRLazzNFT(voucher, 1, {
@@ -136,12 +132,12 @@ const { developmentChains } = require("../../helper.config")
                   PTNFTMarketPlace = PTNFTMarketPlaceContract.connect(redeemer)
 
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await expect(
                       PTNFTMarketPlace.createMarketItem(
                           1,
                           minPrice,
-                          maxPrice,
+
                           true,
                           1,
                           ptNFT.address
@@ -153,12 +149,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.4")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", voucher.minPrice.toString(), sendEther.toString())
@@ -169,12 +164,12 @@ const { developmentChains } = require("../../helper.config")
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   sendEther = ethers.utils.parseEther("0.4")
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       1,
                       ptNFT.address
@@ -184,8 +179,6 @@ const { developmentChains } = require("../../helper.config")
                   assert.equal(res.seller.toString(), minter.address.toString())
                   assert.equal(res.buyer.toString(), "0x0000000000000000000000000000000000000000")
                   assert.equal(res.minPrice.toString(), minPrice.toString())
-                  assert.equal(res.maxPrice.toString(), maxPrice.toString())
-
                   assert.equal(res.isFixedPrice.toString(), "false")
                   assert.equal(res.state.toString(), "0")
               })
@@ -194,12 +187,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.4")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
 
@@ -209,12 +201,12 @@ const { developmentChains } = require("../../helper.config")
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   sendEther = ethers.utils.parseEther("0.4")
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       1,
                       ptNFT.address
@@ -223,7 +215,7 @@ const { developmentChains } = require("../../helper.config")
                       PTNFTMarketPlace.createMarketItem(
                           1,
                           minPrice,
-                          maxPrice,
+
                           true,
                           1,
                           ptNFT.address
@@ -238,12 +230,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.4")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", voucher.minPrice.toString(), sendEther.toString())
@@ -254,12 +245,12 @@ const { developmentChains } = require("../../helper.config")
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   sendEther = ethers.utils.parseEther("0.1")
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       1,
                       ptNFT.address
@@ -279,12 +270,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   const startingBalance = await PTNFTMarketPlace.provider.getBalance(minter.address)
@@ -309,7 +299,7 @@ const { developmentChains } = require("../../helper.config")
 
                   sendEther = ethers.utils.parseEther("0.1")
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   txResponse = await ptNFT.approve(PTNFTMarketPlace.address, 1)
 
                   var txReceipt = await txResponse.wait(1) // waits 1 block
@@ -319,7 +309,7 @@ const { developmentChains } = require("../../helper.config")
                   txResponse = await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       1,
                       ptNFT.address
@@ -361,12 +351,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.4")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", voucher.minPrice.toString(), sendEther.toString())
@@ -377,12 +366,12 @@ const { developmentChains } = require("../../helper.config")
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   sendEther = ethers.utils.parseEther("0.1")
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       1,
                       ptNFT.address
@@ -408,12 +397,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -423,11 +411,11 @@ const { developmentChains } = require("../../helper.config")
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       true,
                       1,
                       ptNFT.address
@@ -442,12 +430,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   await PTNFTMarketPlace.createOfferFoRLazzNFT(voucher, 1, {
@@ -457,11 +444,11 @@ const { developmentChains } = require("../../helper.config")
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
 
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       true,
                       1,
                       ptNFT.address
@@ -478,12 +465,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   await PTNFTMarketPlace.createOfferFoRLazzNFT(voucher, 1, {
@@ -493,11 +479,11 @@ const { developmentChains } = require("../../helper.config")
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
 
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       true,
                       1,
                       ptNFT.address
@@ -516,12 +502,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -530,7 +515,7 @@ const { developmentChains } = require("../../helper.config")
                   })
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await expect(
                       PTNFTMarketPlace.createOffer(1, 1, ptNFT.address)
                   ).to.be.revertedWith("PTNFTMarketPlace__ItemIdInvalid")
@@ -540,12 +525,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -554,12 +538,12 @@ const { developmentChains } = require("../../helper.config")
                   })
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       true,
                       1,
                       ptNFT.address
@@ -574,12 +558,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -588,12 +571,12 @@ const { developmentChains } = require("../../helper.config")
                   })
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       1,
                       ptNFT.address
@@ -608,12 +591,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -622,14 +604,14 @@ const { developmentChains } = require("../../helper.config")
                   })
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   var res = await ptNFT.getApprovedOrOwner(PTNFTMarketPlace.address, 1)
                   console.log("res", res.toString())
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       1,
                       ptNFT.address
@@ -650,12 +632,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -664,12 +645,12 @@ const { developmentChains } = require("../../helper.config")
                   })
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       1,
                       ptNFT.address
@@ -687,12 +668,11 @@ const { developmentChains } = require("../../helper.config")
                   let sendEther = ethers.utils.parseEther("0.1")
 
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -702,12 +682,12 @@ const { developmentChains } = require("../../helper.config")
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   sendEther = ethers.utils.parseEther("0.01")
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       1,
                       ptNFT.address
@@ -723,12 +703,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.1")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
 
@@ -738,12 +717,12 @@ const { developmentChains } = require("../../helper.config")
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   sendEther = ethers.utils.parseEther("0.1")
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       1,
                       ptNFT.address
@@ -755,54 +734,17 @@ const { developmentChains } = require("../../helper.config")
                       })
                   ).to.emit(PTNFTMarketPlace, "CreateOffer")
               })
-              it("check createOffer fail on exceed MaxPrice", async function () {
-                  const ptMinter = new PTMinter({ ptNFT, signer: minter })
-                  console.log("minter", minter.address)
-                  let sendEther = ethers.utils.parseEther("0.1")
-                  let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
-                  const voucher = await ptMinter.createVoucher(
-                      1,
-                      "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
-                      minPrice
-                  )
-
-                  await PTNFTMarketPlace.createOfferFoRLazzNFT(voucher, 1, {
-                      value: sendEther,
-                  })
-                  await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
-                  sendEther = ethers.utils.parseEther("0.6")
-                  minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
-                  await ptNFT.approve(PTNFTMarketPlace.address, 1)
-                  await PTNFTMarketPlace.createMarketItem(
-                      1,
-                      minPrice,
-                      maxPrice,
-                      false,
-                      1,
-                      ptNFT.address
-                  )
-
-                  await expect(
-                      PTNFTMarketPlace.createOffer(1, 1, ptNFT.address, {
-                          value: sendEther,
-                      })
-                  ).to.be.revertedWith("PTNFTMarketPlace__AmountNoExceedMaxPrice")
-              })
               it("check createOffer Offer Created", async function () {
                   const ptMinter = new PTMinter({ ptNFT, signer: minter })
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.4")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", voucher.minPrice.toString(), sendEther.toString())
@@ -813,12 +755,12 @@ const { developmentChains } = require("../../helper.config")
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   sendEther = ethers.utils.parseEther("0.1")
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       1,
                       ptNFT.address
@@ -843,12 +785,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.4")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", voucher.minPrice.toString(), sendEther.toString())
@@ -859,12 +800,12 @@ const { developmentChains } = require("../../helper.config")
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   sendEther = ethers.utils.parseEther("0.4")
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       1,
                       ptNFT.address
@@ -886,12 +827,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.3")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", voucher.minPrice.toString(), sendEther.toString())
@@ -901,12 +841,12 @@ const { developmentChains } = require("../../helper.config")
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   sendEther = ethers.utils.parseEther("0.4")
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       1,
                       ptNFT.address
@@ -934,12 +874,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.3")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", voucher.minPrice.toString(), sendEther.toString())
@@ -949,12 +888,12 @@ const { developmentChains } = require("../../helper.config")
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   sendEther = ethers.utils.parseEther("0.4")
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       1,
                       ptNFT.address
@@ -986,12 +925,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.5")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", voucher.minPrice.toString(), sendEther.toString())
@@ -1001,12 +939,12 @@ const { developmentChains } = require("../../helper.config")
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   sendEther = ethers.utils.parseEther("0.5")
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       1,
                       ptNFT.address
@@ -1060,12 +998,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.5")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
 
@@ -1085,12 +1022,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -1099,7 +1035,7 @@ const { developmentChains } = require("../../helper.config")
                   })
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await expect(PTNFTMarketPlace.buy(1, ptNFT.address)).to.be.revertedWith(
                       "PTNFTMarketPlace__ItemIdInvalid"
                   )
@@ -1109,12 +1045,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -1123,12 +1058,12 @@ const { developmentChains } = require("../../helper.config")
                   })
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       1,
                       ptNFT.address
@@ -1143,12 +1078,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -1157,12 +1091,12 @@ const { developmentChains } = require("../../helper.config")
                   })
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       1,
                       ptNFT.address
@@ -1177,12 +1111,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -1191,12 +1124,12 @@ const { developmentChains } = require("../../helper.config")
                   })
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       1,
                       ptNFT.address
@@ -1208,52 +1141,17 @@ const { developmentChains } = require("../../helper.config")
                       "PTNFTMarketPlace__MarketItemExpired"
                   )
               })
-              it("check buyMarketplace send less the max Price", async function () {
-                  const ptMinter = new PTMinter({ ptNFT, signer: minter })
-                  console.log("minter", minter.address)
-                  let sendEther = ethers.utils.parseEther("0.2")
-                  let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
-                  const voucher = await ptMinter.createVoucher(
-                      1,
-                      "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
-                      minPrice
-                  )
-
-                  await PTNFTMarketPlace.createOfferFoRLazzNFT(voucher, 1, {
-                      value: sendEther,
-                  })
-                  await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
-                  minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
-                  await ptNFT.approve(PTNFTMarketPlace.address, 1)
-                  await PTNFTMarketPlace.createMarketItem(
-                      1,
-                      minPrice,
-                      maxPrice,
-                      false,
-                      1,
-                      ptNFT.address
-                  )
-                  await expect(
-                      PTNFTMarketPlace.buy(1, ptNFT.address, {
-                          value: sendEther,
-                      })
-                  ).to.be.revertedWith("PTNFTMarketPlace__AmountNoExceedMaxPrice")
-              })
               it("check buyMarketplace redeem NFT voucher", async function () {
                   const ptMinter = new PTMinter({ ptNFT, signer: minter })
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.5")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
 
@@ -1262,12 +1160,12 @@ const { developmentChains } = require("../../helper.config")
                   })
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       1,
                       ptNFT.address
@@ -1288,12 +1186,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.5")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
 
@@ -1302,12 +1199,12 @@ const { developmentChains } = require("../../helper.config")
                   })
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       1,
                       ptNFT.address
@@ -1325,12 +1222,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.3")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", voucher.minPrice.toString(), sendEther.toString())
@@ -1340,12 +1236,12 @@ const { developmentChains } = require("../../helper.config")
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   sendEther = ethers.utils.parseEther("0.4")
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       1,
                       ptNFT.address
@@ -1381,12 +1277,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -1395,12 +1290,12 @@ const { developmentChains } = require("../../helper.config")
                   })
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       1,
                       ptNFT.address
@@ -1415,12 +1310,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -1429,14 +1323,14 @@ const { developmentChains } = require("../../helper.config")
                   })
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   var res = await ptNFT.getApprovedOrOwner(PTNFTMarketPlace.address, 1)
                   console.log("res", res.toString())
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       1,
                       ptNFT.address
@@ -1456,12 +1350,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -1470,13 +1363,12 @@ const { developmentChains } = require("../../helper.config")
                   })
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
 
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       1,
                       ptNFT.address
@@ -1494,12 +1386,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -1508,12 +1399,12 @@ const { developmentChains } = require("../../helper.config")
                   })
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       1,
                       ptNFT.address
@@ -1530,12 +1421,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -1544,12 +1434,12 @@ const { developmentChains } = require("../../helper.config")
                   })
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       2,
                       ptNFT.address
@@ -1570,12 +1460,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -1584,12 +1473,12 @@ const { developmentChains } = require("../../helper.config")
                   })
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       2,
                       ptNFT.address
@@ -1605,12 +1494,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.234")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -1619,12 +1507,12 @@ const { developmentChains } = require("../../helper.config")
                   })
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       2,
                       ptNFT.address
@@ -1645,12 +1533,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -1659,12 +1546,12 @@ const { developmentChains } = require("../../helper.config")
                   })
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       2,
                       ptNFT.address
@@ -1690,12 +1577,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -1704,12 +1590,12 @@ const { developmentChains } = require("../../helper.config")
                   })
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       2,
                       ptNFT.address
@@ -1762,12 +1648,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -1776,12 +1661,12 @@ const { developmentChains } = require("../../helper.config")
                   })
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       1,
                       ptNFT.address
@@ -1796,12 +1681,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -1810,12 +1694,12 @@ const { developmentChains } = require("../../helper.config")
                   })
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       1,
                       ptNFT.address
@@ -1834,12 +1718,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -1848,14 +1731,14 @@ const { developmentChains } = require("../../helper.config")
                   })
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   var res = await ptNFT.getApprovedOrOwner(PTNFTMarketPlace.address, 1)
                   console.log("res", res.toString())
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       1,
                       ptNFT.address
@@ -1875,12 +1758,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -1889,13 +1771,12 @@ const { developmentChains } = require("../../helper.config")
                   })
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
 
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       1,
                       ptNFT.address
@@ -1913,12 +1794,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -1927,12 +1807,12 @@ const { developmentChains } = require("../../helper.config")
                   })
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       2,
                       ptNFT.address
@@ -1953,12 +1833,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -1967,12 +1846,12 @@ const { developmentChains } = require("../../helper.config")
                   })
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
                   await PTNFTMarketPlace.createMarketItem(
                       1,
                       minPrice,
-                      maxPrice,
+
                       false,
                       2,
                       ptNFT.address
@@ -1988,12 +1867,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -2002,16 +1880,9 @@ const { developmentChains } = require("../../helper.config")
                   })
                   await PTNFTMarketPlace.acceptLazzNFTOffer(voucher)
                   minPrice = ethers.utils.parseEther("0.1")
-                  maxPrice = ethers.utils.parseEther("0.5")
+
                   await ptNFT.approve(PTNFTMarketPlace.address, 1)
-                  await PTNFTMarketPlace.createMarketItem(
-                      1,
-                      minPrice,
-                      maxPrice,
-                      false,
-                      2,
-                      ptNFT.address
-                  )
+                  await PTNFTMarketPlace.createMarketItem(1, minPrice, false, 2, ptNFT.address)
                   PTNFTMarketPlace = PTNFTMarketPlaceContract.connect(redeemer)
 
                   const txResponse = await PTNFTMarketPlace.createOffer(1, 1, ptNFT.address, {

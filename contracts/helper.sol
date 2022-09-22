@@ -11,34 +11,13 @@ enum OfferState {
     CLOSE
 }
 
-// 3. Interfaces, Libraries, Contracts
-error PTNFTMarketPlace__NotOwner();
-error PTNFTMarketPlace__InsufficientFund();
-error PTNFTMarketPlace__NotAvailableForOffer();
-error PTNFTMarketPlace__FailToWithDrawAmount();
-error PTNFTMarketPlace__NoAmountForWithDraw();
-// error PTNFTMarketPlace__ZeroExpiredNoOfDaysAndMinPrice();
-error PTNFTMarketPlace__ValueShouldGreaterThenZero();
-
-error PTNFTMarketPlace__PermissionRequired();
-error PTNFTMarketPlace__MarketItemExpired();
-error PTNFTMarketPlace__OfferTimeExpired();
-error PTNFTMarketPlace__NoOfferExist();
-
-error PTNFTMarketPlace__FixedPirceMarketItem();
-// error PTNFTMarketPlace__ListingFeeNotZero();
-error PTNFTMarketPlace__NFTContractAddressIsRequired();
-// error PTNFTMarketPlace__ExpiringNoDaysNotZero();
-error PTNFTMarketPlace__AlreadyListed(address, uint256);
-error PTNFTMarketPlace__ItemIdInvalid(address, uint256);
-
 struct NFTVoucher {
     /// @notice The id of the token to be redeemed. Must be unique - if another token with this ID already exists, the redeem function will revert.
     uint256 tokenId;
     /// @notice The minimum price (in wei) that the NFT creator is willing to accept for the initial sale of this NFT.
     uint256 minPrice;
-    // /// @notice The maxmum price (in wei) that the NFT creator is willing to accept for the buy this NFT.
-    // uint256 maxPrice;
+    /// @notice the index of token address on which user want to sale the NFT.
+    uint256 pid;
     /// @notice The metadata URI to associate with this token.
     string uri;
     /// @notice the EIP-712 signature of all other fields in the NFTVoucher struct. For a voucher to be valid, it must be signed by an account with the MINTER_ROLE.
@@ -77,6 +56,8 @@ struct MarketItem {
     uint256 startAt;
     /// @notice The metadata URI to associate with this token.
     uint256 expiresAt;
+    /// @notice the index of token address on which user want to sale the NFT.
+    uint256 pid;
     State state;
 }
 

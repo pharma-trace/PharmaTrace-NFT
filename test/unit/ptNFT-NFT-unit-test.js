@@ -41,12 +41,10 @@ const { developmentChains } = require("../../helper.config")
                   let sendEther = ethers.utils.parseEther("0.01")
 
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   let voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
                       minPrice
                   )
                   console.log("voucher", voucher)
@@ -63,12 +61,10 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.1")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
                       minPrice
                   )
                   console.log("voucher", voucher.minPrice.toString(), sendEther.toString())
@@ -80,42 +76,17 @@ const { developmentChains } = require("../../helper.config")
                       })
                   ).to.emit(PTNFTMarketPlace, "CreateOffer")
               })
-              it("check createOfferFoRLazzNFT refund extra Amount", async function () {
-                  const ptMinter = new PTMinter({ ptNFT, signer: minter })
-                  console.log("minter", minter.address)
-                  let sendEther = ethers.utils.parseEther("0.6")
-                  let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
-                  const voucher = await ptMinter.createVoucher(
-                      1,
-                      "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
-                      minPrice
-                  )
-                  console.log("voucher", voucher.minPrice.toString(), sendEther.toString())
-                  const startingFundMeBalance = await PTNFTMarketPlace.provider.getBalance(
-                      minter.address
-                  )
-                  console.log("startingFundMeBalance", startingFundMeBalance.toString())
-
-                  await expect(
-                      PTNFTMarketPlace.createOfferFoRLazzNFT(voucher, 1, {
-                          value: sendEther,
-                      })
-                  ).to.be.revertedWith("PTNFTMarketPlace__AmountNoExceedMaxPrice")
-              })
               it("check createOfferFoRLazzNFT Offer Created", async function () {
                   const ptMinter = new PTMinter({ ptNFT, signer: minter })
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.4")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", voucher.minPrice.toString(), sendEther.toString())
@@ -143,12 +114,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.4")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", voucher.minPrice.toString(), sendEther.toString())
@@ -177,12 +147,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.3")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", voucher.minPrice.toString(), sendEther.toString())
@@ -212,12 +181,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.3")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", voucher.minPrice.toString(), sendEther.toString())
@@ -246,12 +214,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.5")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", voucher.minPrice.toString(), sendEther.toString())
@@ -266,62 +233,19 @@ const { developmentChains } = require("../../helper.config")
                       })
                   ).to.be.revertedWith("PTNFTMarketPlace__NotAvailableForOffer")
               })
-              it("check createOfferFoRLazzNFT refund extra Amount", async function () {
-                  const ptMinter = new PTMinter({ ptNFT, signer: minter })
-                  console.log("minter", minter.address)
-                  let sendEther = ethers.utils.parseEther("0.6")
-                  let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
-
-                  const voucher = await ptMinter.createVoucher(
-                      1,
-                      "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
-                      minPrice
-                  )
-                  console.log("voucher", voucher.minPrice.toString(), sendEther.toString())
-
-                  await expect(
-                      PTNFTMarketPlace.createOfferFoRLazzNFT(voucher, 1, {
-                          value: sendEther,
-                      })
-                  ).to.be.revertedWith("PTNFTMarketPlace__AmountNoExceedMaxPrice")
-              })
           })
 
           describe("PTNFTMarketPlace buyLazzNFT ", function () {
-              it("check buyLazzNFT send less the max Price", async function () {
-                  const ptMinter = new PTMinter({ ptNFT, signer: minter })
-                  console.log("minter", minter.address)
-                  let sendEther = ethers.utils.parseEther("0.2")
-                  let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
-
-                  const voucher = await ptMinter.createVoucher(
-                      1,
-                      "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
-                      minPrice
-                  )
-                  console.log("voucher", voucher.minPrice.toString(), sendEther.toString())
-
-                  await expect(
-                      PTNFTMarketPlace.buyLazzNFT(voucher, {
-                          value: sendEther,
-                      })
-                  ).to.be.revertedWith("PTNFTMarketPlace__AmountNoExceedMaxPrice")
-              })
               it("check buyLazzNFT redeem NFT voucher", async function () {
                   const ptMinter = new PTMinter({ ptNFT, signer: minter })
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.5")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", voucher.minPrice.toString(), sendEther.toString())
@@ -352,12 +276,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.5")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", voucher.minPrice.toString(), sendEther.toString())
@@ -381,12 +304,11 @@ const { developmentChains } = require("../../helper.config")
                   const ptMinter = new PTMinter({ ptNFT, signer: minter })
                   let sendEther = ethers.utils.parseEther("0.5")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", voucher.minPrice.toString(), sendEther.toString())
@@ -415,12 +337,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.5")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", voucher.minPrice.toString(), sendEther.toString())
@@ -438,12 +359,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.3")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", voucher.minPrice.toString(), sendEther.toString())
@@ -472,12 +392,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -498,12 +417,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -525,12 +443,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -548,12 +465,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.5")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
 
@@ -580,12 +496,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.5")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
 
@@ -615,12 +530,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -639,12 +553,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -664,12 +577,10 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -690,12 +601,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -714,12 +624,10 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
                       minPrice
                   )
                   const startingBalance = await PTNFTMarketPlace.provider.getBalance(minter.address)
@@ -752,12 +660,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.2")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", redeemer.address)
@@ -782,12 +689,11 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.3")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
+
                       minPrice
                   )
                   console.log("voucher", voucher.minPrice.toString(), sendEther.toString())
@@ -831,12 +737,10 @@ const { developmentChains } = require("../../helper.config")
                   console.log("minter", minter.address)
                   let sendEther = ethers.utils.parseEther("0.3")
                   let minPrice = ethers.utils.parseEther("0.1")
-                  let maxPrice = ethers.utils.parseEther("0.5")
 
                   const voucher = await ptMinter.createVoucher(
                       1,
                       "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC",
-                      maxPrice,
                       minPrice
                   )
                   console.log("voucher", voucher.minPrice.toString(), sendEther.toString())

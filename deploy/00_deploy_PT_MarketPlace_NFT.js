@@ -8,27 +8,20 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId, network }) 
     const { deployer } = await getNamedAccounts() // it will tell the who is going to deploy the contract
     const chainId = await getChainId()
 
-    log("--------------------------------")
-    const SIGNING_DOMAIN_NAME = "PT-Voucher"
-    const SIGNING_DOMAIN_VERSION = "1"
+    log("---------------- PTNFTMarketPlace ----------------")
 
     log("Network is detected to be mock")
-    const ptNFT = await deploy("PTNFT", {
+    const PTNFTMarketPlace = await deploy("PTNFTMarketPlace", {
         from: deployer,
-        args: [
-            "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-            "PhramaTrace",
-            "PTNFT",
-            SIGNING_DOMAIN_NAME,
-            SIGNING_DOMAIN_VERSION,
-        ],
         log: true,
         waitConfirmations: network.config.blockConfirmations || 1,
     })
-    log(`ptNFT contract is deployed on local network to ${ptNFT.address} ${chainId}`)
+    log(
+        `PTNFT MarketPlace contract is deployed on local network to ${PTNFTMarketPlace.address} ${chainId}`
+    )
 
     if (!developmentChains.includes(network.name) && process.env.ETHERSCANAPIKEY) {
-        await verify(ptNFT.address, [ethUsdPriceFeedAddress])
+        await verify(PTNFTMarketPlace.address, [])
     }
 }
-module.exports.tags = ["nft", "all"]
+module.exports.tags = ["market", "all"]
