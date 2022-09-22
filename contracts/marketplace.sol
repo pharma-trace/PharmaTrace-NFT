@@ -1,4 +1,3 @@
-// contracts/BadgeToken.sol
 // SPDX-License-Identifier: MIT
 // 1. Pragma
 pragma solidity ^0.8.8;
@@ -31,7 +30,7 @@ contract PTNFTMarketPlace is ReentrancyGuard, Marketplace_Interface {
     Counters.Counter private _totalOfferOnMarketPlace;
     address payable immutable i_marketowner;
     uint256 private s_listingFee = 25; // 2.5%
-    IERC20[] public AllowedCrypto;
+    IERC20[] public AllowedCrypto; // this will tell as what different token we are support in  our Marketplace
 
     // mapping(uint256 => Offer) private s_offers;
     mapping(address => mapping(uint256 => Offer)) private s_offers;
@@ -147,6 +146,8 @@ contract PTNFTMarketPlace is ReentrancyGuard, Marketplace_Interface {
 
     /// @notice this function is used to buy Lazz NFT and mint it by pay the maxPrice of that NFT.
     /// @param voucher A signed NFTVoucher that describes the NFT to be redeemed.
+    /// @param _offerAmount offer amount in token you want to buy
+
     function buyLazzNFT(NFTVoucher calldata voucher, uint256 _offerAmount)
         public
         payable
@@ -200,6 +201,8 @@ contract PTNFTMarketPlace is ReentrancyGuard, Marketplace_Interface {
 
     /// @notice this function is used to accept any offer for Lazz NFT and mint it and transfer that NFT to buyer.
     /// @param voucher A signed NFTVoucher that describes the NFT to be redeemed.
+    /// @param _offerAmount offer amount in token you want to buy
+
     function acceptLazzNFTOffer(NFTVoucher calldata voucher, uint256 _offerAmount)
         public
         payable
@@ -276,6 +279,7 @@ contract PTNFTMarketPlace is ReentrancyGuard, Marketplace_Interface {
     /// @param isFixedPrice true mean no offer and false mean enable place offer.
     /// @param expiresAt time to expired from market sale.
     /// @param nftAddress address of the contract which you want to listed
+    /// @param pid this index of ERC20 Token address
 
     function createMarketItem(
         uint256 itemId,
@@ -362,6 +366,7 @@ contract PTNFTMarketPlace is ReentrancyGuard, Marketplace_Interface {
     /// @param itemId  which record.
     /// @param numberOfDays  offer expired time in days.
     /// @param nftAddress address of the contract which you want to listed
+    /// @param offerAmount offer amount in token you want to buy
 
     function createOffer(
         uint16 itemId,
@@ -429,6 +434,7 @@ contract PTNFTMarketPlace is ReentrancyGuard, Marketplace_Interface {
     /// @notice buy NFT on maxPirce.
     /// @param itemId  which record.
     /// @param nftAddress address of the contract which you want to listed
+    /// @param offerAmount offer amount in token you want to buy
 
     function buy(
         uint256 itemId,
@@ -526,6 +532,7 @@ contract PTNFTMarketPlace is ReentrancyGuard, Marketplace_Interface {
     /// @notice Accepte the offer on which you are willing to sale .
     /// @param itemId  which record.
     /// @param nftAddress address of the contract which you want to listed
+    /// @param offerAmount offer amount in token you want to buy
 
     function acceptOffer(
         uint256 itemId,
@@ -576,7 +583,6 @@ contract PTNFTMarketPlace is ReentrancyGuard, Marketplace_Interface {
     /// @param itemId  which record.
     /// @param nftAddress   address to get which record
     /// @param nft   contract object
-
     function checkRequirmentMarketPlace(
         uint256 itemId,
         address nftAddress,
@@ -591,7 +597,7 @@ contract PTNFTMarketPlace is ReentrancyGuard, Marketplace_Interface {
         return item;
     }
 
-    /// @notice this is an helper function optimize the code .
+    /// @notice This function will basic check on ERC20
     /// @param newOfferAmount  item expired or not.
     /// @param pid  older offer amount is greater or less the new one.
     function checkERC20Requirment(uint256 newOfferAmount, uint256 pid) internal view {
