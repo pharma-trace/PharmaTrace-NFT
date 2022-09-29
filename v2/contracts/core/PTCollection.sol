@@ -5,8 +5,8 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "../libraries/Helper.sol";
 
+import "../libraries/Helper.sol";
 import { IPTCollection } from "../interfaces/IPTCollection.sol";
 
 contract PTCollection is IPTCollection, ERC721URIStorage, EIP712, AccessControl {
@@ -61,24 +61,12 @@ contract PTCollection is IPTCollection, ERC721URIStorage, EIP712, AccessControl 
             _hashTypedDataV4(
                 keccak256(
                     abi.encode(
-                        keccak256("NFTVoucher(uint256 tokenId,uint256 minPrice,uint256 pid,string uri)"),
+                        keccak256("NFTVoucher(uint256 tokenId, string uri)"),
                         voucher.tokenId,
-                        voucher.minPrice,
                         keccak256(bytes(voucher.uri))
                     )
                 )
             );
-    }
-
-    /// @notice Returns the chain id of the current blockchain.
-    /// @dev This is used to workaround an issue with ganache returning different values from the on-chain chainid() function and
-    ///  the eth_chainId RPC method. See https://github.com/protocol/nft-website/issues/121 for context.
-    function getChainID() external view returns (uint256) {
-        uint256 id;
-        assembly {
-            id := chainid()
-        }
-        return id;
     }
 
     /// @notice Verifies the signature for a given NFTVoucher, returning the address of the signer.
@@ -89,24 +77,7 @@ contract PTCollection is IPTCollection, ERC721URIStorage, EIP712, AccessControl 
         return ECDSA.recover(digest, voucher.signature);
     }
 
-    function getApprovedOrOwner(address spender, uint256 tokenId) public view returns (bool) {
-        return _isApprovedOrOwner(spender, tokenId);
-    }
-    
-    function _isApprovedOrOwner(address spender, uint256 tokenId) internal view override returns (bool) {
-        address owner = ERC721.ownerOf(tokenId);
-        return (spender == owner || isApprovedForAll(owner, spender) || getApproved(tokenId) == spender);
-    }
-
     function supportsInterface(bytes4 interfaceId) public view virtual override(AccessControl, ERC721) returns (bool) {
         return ERC721.supportsInterface(interfaceId) || AccessControl.supportsInterface(interfaceId);
-    }
-
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        uint256 tokenId
-    ) internal virtual override {
-        super._beforeTokenTransfer(from, to, tokenId);
     }
 }

@@ -4,97 +4,55 @@ pragma solidity ^0.8.17;
 import "../libraries/Helper.sol";
 
 interface IPTMarket {
-    // 3. Interfaces, Libraries, Contracts
-    error PTNFTMarketPlace__NotOwner();
-    error PTNFTMarketPlace__InsufficientFund();
-    error PTNFTMarketPlace__NotAvailableForOffer();
-    error PTNFTMarketPlace__FailToWithDrawAmount();
-    error PTNFTMarketPlace__NoAmountForWithDraw();
-    // error PTNFTMarketPlace__ZeroExpiredNoOfDaysAndMinPrice();
-    error PTNFTMarketPlace__ValueShouldGreaterThenZero();
+    // structs
+    struct MarketItem {
+        address seller;
+        address currency;
+        uint256 minPrice;
+        uint256 expiry;
+        bool isFixedPrice;
+        bool isVoucher;
+    }
+    struct Offer {
+        address buyer;
+        uint256 offerPrice;
+    }
 
-    error PTNFTMarketPlace__PermissionRequired();
-    error PTNFTMarketPlace__MarketItemExpired();
-    error PTNFTMarketPlace__OfferTimeExpired();
-    error PTNFTMarketPlace__NoOfferExist();
-    error PTNFTMarketPlace__AllowedCryptoNotExist();
-    error PTNFTMarketPlace__InsufficientApprovalFund();
-
-    error PTNFTMarketPlace__FixedPirceMarketItem();
-    // error PTNFTMarketPlace__ListingFeeNotZero();
-    error PTNFTMarketPlace__NFTContractAddressIsRequired();
-    // error PTNFTMarketPlace__ExpiringNoDaysNotZero();
-    error PTNFTMarketPlace__AlreadyListed(address, uint256);
-    error PTNFTMarketPlace__ItemIdInvalid(address, uint256);
-
-    // Events Lazz NFT
-    event ReceivedCalled(address indexed buyer, uint256 indexed amount);
-    event FallbackCalled(address indexed buyer, uint256 indexed amount);
-    event CreateOffer(
+    // events
+    event ItemListed(
+        address indexed collection,
         uint256 indexed tokenId,
-        address indexed contractAddress,
-        uint256 offerAmount,
-        uint256 totalOffers,
-        uint256 startAt,
-        uint256 expiresAt,
-        address payable indexed offerBy,
-        OfferState status
-    );
-    event AcceptOffer(
-        uint256 indexed tokenId,
-        address owner,
-        address indexed contractAddress,
-        uint256 offerAmount,
-        address payable indexed offerBy,
-        OfferState status
-    );
-    event RejectOffer(
-        uint256 indexed tokenId,
-        address owner,
-        address indexed contractAddress,
-        uint256 offerAmount,
-        address payable indexed offerBy,
-        OfferState status
-    );
-    event WithDrawFromOffer(
-        uint256 indexed tokenId,
-        address indexed contractAddress,
-        uint256 offerAmount,
-        address payable indexed offerBy
-    );
-    event WithDrawAmount(address indexed offerBy, uint256 indexed amount);
-    event WithDrawRefundAmount(
-        uint256 indexed tokenId,
-        address indexed contractAddress,
-        address indexed offerBy,
-        uint256 amount
-    );
-    event BuyNFT(
-        uint256 indexed tokenId,
-        address owner,
-        address indexed contractAddress,
-        uint256 offerAmount,
-        address payable indexed offerBy
-    );
-
-    // Event MarketPlace
-    event MarketItemCreated(
-        uint256 indexed tokenId,
-        address indexed contractAddress,
         address indexed seller,
-        address buyer,
+        address currency,
         uint256 minPrice,
+        uint256 expiry,
         bool isFixedPrice,
-        uint256 startAt,
-        uint256 expiresAt,
-        State state
+        bool isVoucher
     );
-    event MarketItemDelete(
+    event TradeExecuted(
+        address indexed collection,
         uint256 indexed tokenId,
-        address indexed contractAddress,
-        address indexed seller,
-        State state
+        address seller,
+        address buyer,
+        address currency,
+        uint256 price,
+        bool isVoucher
     );
-    event TotalNumberOfOfferOnMarketPlace(uint256 indexed totalOfferOnMarketPlace);
-    event TotalNumberOfItemMarketPlace(uint256 indexed itemSoldCounter);
+    
+    event VoucherWritten(address indexed collection, uint256 indexed tokenId, string uri, bytes signature);
+    event CurrencyWhitelisted(address indexed currency, bool addOrRemove);
+    event ItemBought(address indexed collection, uint256 indexed tokenId, address buyer);
+    event OfferCreated(address indexed collection, uint256 indexed tokenId, address buyer, uint256 offerPrice);
+    event OfferAccepted(address indexed collection, uint256 indexed tokenId, address buyer);
+    event OfferRejected(address indexed collection, uint256 indexed tokenId, address buyer);
+    event ItemUnlisted(address indexed collection, uint256 indexed tokenId);
+    event OfferWithdrawn(address indexed collection, uint256 indexed tokenId);
+    event FeePercentageUpadated(uint256 newFeePercentage);
+
+    // errors
+    error PTMarket__ReentrancyError(address collection, uint256 tokenId);
+    error PTMarket__NotSeller(address seller);
+    error PTMarket__NotOfferer(address buyer);
+    error PTMarket__MarketItemExpired(uint256 expiry);
+    error PTMarket__LowerPriceThanPrevious(uint256 lastOfferPrice);
 }
