@@ -6,6 +6,8 @@ struct NFTVoucher {
     uint256 tokenId;
     /// @notice The metadata URI to associate with this token.
     string uri;
+    /// @notice The token address on which user want to sale the NFT.
+    address currency;
     /// @notice the EIP-712 signature of all other fields in the NFTVoucher struct. For a voucher to be valid, it must be signed by an account with the MINTER_ROLE.
     bytes signature;
 }

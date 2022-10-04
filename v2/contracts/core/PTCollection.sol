@@ -36,7 +36,7 @@ contract PTCollection is IPTCollection, ERC721URIStorage, EIP712, AccessControl 
     /// @param voucher A signed NFTVoucher that describes the NFT to be redeemed.
     function redeem(
         address redeemer,
-        NFTVoucher calldata voucher /*onlyMarketPlace*/
+        NFTVoucher calldata voucher
     )
         external
         onlyMarketPlace /*returns (uint256)*/
@@ -61,9 +61,10 @@ contract PTCollection is IPTCollection, ERC721URIStorage, EIP712, AccessControl 
             _hashTypedDataV4(
                 keccak256(
                     abi.encode(
-                        keccak256("NFTVoucher(uint256 tokenId, string uri)"),
+                        keccak256("NFTVoucher(uint256 tokenId, string uri, string currency)"),
                         voucher.tokenId,
-                        keccak256(bytes(voucher.uri))
+                        keccak256(bytes(voucher.uri)),
+                        keccak256(bytes(abi.encodePacked(voucher.currency)))
                     )
                 )
             );

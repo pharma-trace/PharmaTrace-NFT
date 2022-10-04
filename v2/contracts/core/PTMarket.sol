@@ -12,7 +12,7 @@ import { IPTCollection } from "../interfaces/IPTCollection.sol";
 contract PTMarket is IPTMarket, Ownable {
     uint256 private constant EXPIRY_ALLOW_PERIOD = 40;
     uint256 private constant DENOMINATOR = 1000;
-    uint256 public feePercentage = 0; // 25 means 2.5%
+    uint256 public feePercentage; // 25 means 2.5%
 
     mapping(address => bool) public currencyList;
     mapping(address => mapping(uint256 => NFTVoucher)) private vouchers;
@@ -54,7 +54,7 @@ contract PTMarket is IPTMarket, Ownable {
     /// @param minPrice minimum price
     /// @param expiresAt number of days in expiry period, can be zero if isFixedPrice
     /// @param isFixedPrice false if and only if auction mode
-    function listNFTItem(
+    function listItem(
         address collection,
         uint256 tokenId,
         address currency,
@@ -68,35 +68,8 @@ contract PTMarket is IPTMarket, Ownable {
         require(IERC721(collection).ownerOf(tokenId) == msg.sender, "Only owner of NFT will list into market");
         uint256 expiry = expiresAt == 0 ? 0 : block.timestamp + (expiresAt * 1 days);
         require(marketItems[collection][tokenId].seller == address(0), "Already listed");
-        marketItems[collection][tokenId] = MarketItem(msg.sender, currency, minPrice, expiry, isFixedPrice, false);
+        marketItems[collection][tokenId] = MarketItem(msg.sender, currency, minPrice, expiry, isFixedPrice);
         emit ItemListed(collection, tokenId, msg.sender, currency, minPrice, expiry, isFixedPrice, false);
-    }
-
-    /// @notice create an item
-    /// @param collection nft collection address
-    /// @param currency desired currency to sell nft
-    /// @param minPrice minimum price
-    /// @param expiresAt number of days in expiry period, can be zero if isFixedPrice
-    /// @param isFixedPrice false if and only if auction mode
-    function listLazzItem(
-        address collection,
-        address currency,
-        uint256 minPrice,
-        uint256 expiresAt,
-        bool isFixedPrice,
-        NFTVoucher calldata voucher
-    ) external whitelisted(currency) nonReentrant(collection, voucher.tokenId) {
-        uint256 tokenId = voucher.tokenId;
-        require(minPrice > 0, "Listed price should be greater then zero");
-        require(isFixedPrice || expiresAt > 0, "expiresAt should not be zero in auction mode");
-        require(IPTCollection(collection).verifySignature(voucher) == msg.sender, "Not signer");
-
-        uint256 expiry = expiresAt == 0 ? 0 : block.timestamp + (expiresAt * 1 days);
-        require(marketItems[collection][tokenId].seller == address(0), "Already listed");
-        marketItems[collection][tokenId] = MarketItem(msg.sender, currency, minPrice, expiry, isFixedPrice, true);
-        emit ItemListed(collection, tokenId, msg.sender, currency, minPrice, expiry, isFixedPrice, true);
-        vouchers[collection][tokenId] = voucher;
-        emit VoucherWritten(collection, tokenId, voucher.uri, voucher.signature);
     }
 
     /// @notice buy a fixed price of Item
@@ -110,7 +83,7 @@ contract PTMarket is IPTMarket, Ownable {
             revert PTMarket__MarketItemExpired(marketItem.expiry);
         }
         require(marketItem.isFixedPrice, "The item is not fixed price mode");
-        _checkNFTApproved(collection, tokenId, marketItem.isVoucher);
+        _checkNFTApproved(collection, tokenId, false);
 
         _lockMoney(marketItem.currency, marketItem.minPrice, msg.sender);
         _executeTrade(
@@ -120,7 +93,7 @@ contract PTMarket is IPTMarket, Ownable {
             msg.sender,
             marketItem.currency,
             marketItem.minPrice,
-            marketItem.isVoucher
+            false
         );
 
         emit ItemBought(collection, tokenId, msg.sender);
@@ -142,7 +115,7 @@ contract PTMarket is IPTMarket, Ownable {
             revert PTMarket__MarketItemExpired(marketItem.expiry);
         }
         require(!marketItem.isFixedPrice, "The item is fixed price mode");
-        _checkNFTApproved(collection, tokenId, marketItem.isVoucher);
+        _checkNFTApproved(collection, tokenId, false);
 
         uint256 lastPrice = marketItem.minPrice - 1;
         Offer storage lastOffer = offers[collection][tokenId];
@@ -153,10 +126,49 @@ contract PTMarket is IPTMarket, Ownable {
             revert PTMarket__LowerPriceThanPrevious(lastPrice);
         }
         address lastBuyer = lastOffer.buyer;
-        _lockMoney(marketItem.currency, marketItem.minPrice, msg.sender);
-        offers[collection][tokenId] = Offer(msg.sender, offerPrice);
+        _lockMoney(marketItem.currency, offerPrice, msg.sender);
+        offers[collection][tokenId] = Offer(msg.sender, offerPrice, false);
         if (lastBuyer != address(0)) {
             _unlockMoney(marketItem.currency, lastPrice, lastBuyer);
+        }
+        emit OfferCreated(collection, tokenId, msg.sender, offerPrice);
+    }
+
+    /// @notice create a new offer for lazz NFT
+    /// @param collection nft collection address
+    /// @param voucher voucher of LazzNFT
+    /// @param offerPrice offerring price to buy
+    function createLazzOffer(
+        address collection,
+        NFTVoucher calldata voucher,
+        uint256 offerPrice
+    ) external payable nonReentrant(collection, voucher.tokenId) {
+        uint256 tokenId = voucher.tokenId;
+        _checkNFTApproved(collection, tokenId, false);
+
+        uint256 lastPrice = 0;
+        Offer storage lastOffer = offers[collection][tokenId];
+        if (lastOffer.buyer != address(0)) {
+            lastPrice = lastOffer.offerPrice;
+        }
+        if (lastPrice >= offerPrice) {
+            revert PTMarket__LowerPriceThanPrevious(lastPrice);
+        }
+        address lastBuyer = lastOffer.buyer;
+        _lockMoney(voucher.currency, offerPrice, msg.sender);
+        offers[collection][tokenId] = Offer(msg.sender, offerPrice, true);
+        if (lastOffer.buyer == address(0)) {
+            vouchers[collection][tokenId] = voucher;
+            emit VoucherWritten(
+                collection,
+                voucher.tokenId,
+                voucher.uri,
+                voucher.currency,
+                voucher.signature
+            );
+        }
+        if (lastBuyer != address(0)) {
+            _unlockMoney(voucher.currency, lastPrice, lastBuyer);
         }
         emit OfferCreated(collection, tokenId, msg.sender, offerPrice);
     }
@@ -171,6 +183,7 @@ contract PTMarket is IPTMarket, Ownable {
         bool acceptOrReject
     ) external nonReentrant(collection, tokenId) {
         Offer storage offer = offers[collection][tokenId];
+        bool isVoucher = offer.isVoucher;
         require(offer.buyer != address(0), "Such market item doesn't exist");
         address buyer = offer.buyer;
         uint256 offerPrice = offer.offerPrice;
@@ -178,7 +191,7 @@ contract PTMarket is IPTMarket, Ownable {
         if (marketItem.seller == msg.sender) {
             revert PTMarket__NotSeller(marketItem.seller);
         }
-        _checkNFTApproved(collection, tokenId, marketItem.isVoucher);
+        _checkNFTApproved(collection, tokenId, false);
         delete offers[collection][tokenId];
         if (acceptOrReject) {
             _executeTrade(
@@ -188,7 +201,7 @@ contract PTMarket is IPTMarket, Ownable {
                 buyer,
                 marketItem.currency,
                 offerPrice,
-                marketItem.isVoucher
+                isVoucher
             );
             emit OfferAccepted(collection, tokenId, buyer);
         } else {
@@ -208,7 +221,6 @@ contract PTMarket is IPTMarket, Ownable {
         if (offers[collection][tokenId].buyer != address(0)) {
             _cancelOffer(collection, tokenId);
         }
-        if (marketItem.isVoucher) delete vouchers[collection][tokenId];
         delete marketItems[collection][tokenId];
         emit ItemUnlisted(collection, tokenId);
     }

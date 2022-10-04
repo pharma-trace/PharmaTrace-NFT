@@ -11,11 +11,11 @@ interface IPTMarket {
         uint256 minPrice;
         uint256 expiry;
         bool isFixedPrice;
-        bool isVoucher;
     }
     struct Offer {
         address buyer;
         uint256 offerPrice;
+        bool isVoucher;
     }
 
     // events
@@ -39,7 +39,7 @@ interface IPTMarket {
         bool isVoucher
     );
     
-    event VoucherWritten(address indexed collection, uint256 indexed tokenId, string uri, bytes signature);
+    event VoucherWritten(address indexed collection, uint256 indexed tokenId, string uri, address currency, bytes signature);
     event CurrencyWhitelisted(address indexed currency, bool addOrRemove);
     event ItemBought(address indexed collection, uint256 indexed tokenId, address buyer);
     event OfferCreated(address indexed collection, uint256 indexed tokenId, address buyer, uint256 offerPrice);
