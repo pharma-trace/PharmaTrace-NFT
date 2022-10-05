@@ -53,7 +53,7 @@ interface IPTMarket {
     event OfferRejected(address indexed collection, uint256 indexed tokenId, address buyer);
     event ItemUnlisted(address indexed collection, uint256 indexed tokenId);
     event OfferWithdrawn(address indexed collection, uint256 indexed tokenId);
-    event FeePercentageUpadated(uint256 newFeePercentage);
+    event FeePercentUpadated(uint256 newFeePercent);
 
     // errors
     error PTMarket__ReentrancyError(address collection, uint256 tokenId);

@@ -14,15 +14,16 @@ contract PTToken is IPTToken, ERC20, Ownable {
      * @param name token name of the PTToken
      * @param symbol token symbol of the PTToken
      * @param _dec number of decimals of the PTToken
+     * @param initialSupply initial mint amount to the owner
      */
     constructor(
         string memory name,
         string memory symbol,
         uint8 _dec,
-        uint256 maxSupply
+        uint256 initialSupply
     ) ERC20(name, symbol) {
         dec = _dec;
-        _mint(msg.sender, maxSupply);
+        _mint(msg.sender, initialSupply);
     }
 
     function decimals() public view override returns (uint8) {

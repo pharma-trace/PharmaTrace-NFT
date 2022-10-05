@@ -12,7 +12,7 @@ import { IPTCollection } from "../interfaces/IPTCollection.sol";
 contract PTMarket is IPTMarket, Ownable {
     uint256 private constant EXPIRY_ALLOW_PERIOD = 40;
     uint256 private constant DENOMINATOR = 1000;
-    uint256 public feePercentage; // 25 means 2.5%
+    uint256 public feePercent; // 25 means 2.5%
 
     mapping(address => bool) public currencyList;
     mapping(address => mapping(uint256 => NFTVoucher)) private vouchers;
@@ -36,7 +36,7 @@ contract PTMarket is IPTMarket, Ownable {
 
     constructor() {
         whitelistCurrency(address(0), true);
-        setFeePercentage(25);
+        setFeePercent(25);
     }
 
     /// @notice this function is used whitelist/unwhitlist market supporting ERC20 tokens
@@ -223,11 +223,11 @@ contract PTMarket is IPTMarket, Ownable {
         emit OfferWithdrawn(collection, tokenId);
     }
 
-    /// @notice update feePercentage
-    /// @param newFeePercentage fee percentage
-    function setFeePercentage(uint256 newFeePercentage) public onlyOwner {
-        feePercentage = newFeePercentage;
-        emit FeePercentageUpadated(newFeePercentage);
+    /// @notice update feePercent
+    /// @param newFeePercent fee percent
+    function setFeePercent(uint256 newFeePercent) public onlyOwner {
+        feePercent = newFeePercent;
+        emit FeePercentUpadated(newFeePercent);
     }
 
     function _cancelOffer(address collection, uint256 tokenId) private {
@@ -288,7 +288,7 @@ contract PTMarket is IPTMarket, Ownable {
         uint256 price,
         bool isVoucher
     ) private {
-        uint256 fee = (price * feePercentage) / DENOMINATOR;
+        uint256 fee = (price * feePercent) / DENOMINATOR;
         if (currency == address(0)) {
             payable(seller).transfer(price - fee);
             payable(owner()).transfer(fee);
