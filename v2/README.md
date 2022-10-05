@@ -4,7 +4,6 @@
 
 ### Ethereum mainnet
 
-
 ```
 PTToken:
 PTMarket:
@@ -14,15 +13,13 @@ PTCollection:
 ### Goerli testnet
 
 ```
-PTToken: 0xD8D1AEdfA55246D62a877bCe4133e771dfF471D1
-PTMarket: 0x095629E092e3b12a62C6A5c9Face6049D4B15834
-PTCollection: 0x69F931A192C181923B3d2836a5Eb24e699718fa0
+PTToken: 0xfDA036A53E7616a5cC9Ad44c7774892A9c3eFc4F
+PTMarket: 0x4988E32C7F4C48Ab528BdF001103B0d7B889F8da
+PTCollection: 0x4cD1c92B414013b14E62B5Cc71c8985388Efe8D4
 ```
 
 ## Guide
 
 ### Deploy
 
-
 ### Test
-

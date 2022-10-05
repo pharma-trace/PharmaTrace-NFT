@@ -4,7 +4,7 @@ pragma solidity ^0.8.17;
 import "../libraries/Helper.sol";
 
 interface IPTCollection {
-    error PTNFT__ONLYMARKETPLACE();
+    error PTCollection__OnlyMarketPlace();
 
     function redeem(address redeemer, NFTVoucher calldata voucher) external;
 

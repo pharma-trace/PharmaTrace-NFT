@@ -26,8 +26,7 @@ interface IPTMarket {
         address currency,
         uint256 minPrice,
         uint256 expiry,
-        bool isFixedPrice,
-        bool isVoucher
+        bool isFixedPrice
     );
     event TradeExecuted(
         address indexed collection,

@@ -69,7 +69,7 @@ contract PTMarket is IPTMarket, Ownable {
         uint256 expiry = expiresAt == 0 ? 0 : block.timestamp + (expiresAt * 1 days);
         require(marketItems[collection][tokenId].seller == address(0), "Already listed");
         marketItems[collection][tokenId] = MarketItem(msg.sender, currency, minPrice, expiry, isFixedPrice);
-        emit ItemListed(collection, tokenId, msg.sender, currency, minPrice, expiry, isFixedPrice, false);
+        emit ItemListed(collection, tokenId, msg.sender, currency, minPrice, expiry, isFixedPrice);
     }
 
     /// @notice buy a fixed price of Item
@@ -144,7 +144,7 @@ contract PTMarket is IPTMarket, Ownable {
         uint256 offerPrice
     ) external payable nonReentrant(collection, voucher.tokenId) {
         uint256 tokenId = voucher.tokenId;
-        _checkNFTApproved(collection, tokenId, false);
+        _checkNFTApproved(collection, tokenId, true);
 
         uint256 lastPrice = 0;
         Offer storage lastOffer = offers[collection][tokenId];
@@ -181,17 +181,29 @@ contract PTMarket is IPTMarket, Ownable {
         require(offer.buyer != address(0), "Such market item doesn't exist");
         address buyer = offer.buyer;
         uint256 offerPrice = offer.offerPrice;
-        MarketItem storage marketItem = marketItems[collection][tokenId];
-        if (marketItem.seller == msg.sender) {
-            revert PTMarket__NotSeller(marketItem.seller);
+        address currency;
+        address seller;
+        if (isVoucher) {
+            NFTVoucher storage voucher = vouchers[collection][tokenId];
+            currency = voucher.currency;
+            seller = IPTCollection(collection).verifySignature(voucher);
         }
-        _checkNFTApproved(collection, tokenId, false);
+        else {
+            MarketItem storage marketItem = marketItems[collection][tokenId];
+            currency = marketItem.currency;
+            seller = marketItem.seller;
+        }
+
+        if (seller == msg.sender) {
+            revert PTMarket__NotSeller(seller);
+        }
+        _checkNFTApproved(collection, tokenId, isVoucher);
         delete offers[collection][tokenId];
         if (acceptOrReject) {
-            _executeTrade(collection, tokenId, marketItem.seller, buyer, marketItem.currency, offerPrice, isVoucher);
+            _executeTrade(collection, tokenId, seller, buyer, currency, offerPrice, isVoucher);
             emit OfferAccepted(collection, tokenId, buyer);
         } else {
-            _unlockMoney(marketItem.currency, offerPrice, buyer);
+            _unlockMoney(currency, offerPrice, buyer);
             emit OfferRejected(collection, tokenId, buyer);
         }
     }
@@ -235,6 +247,9 @@ contract PTMarket is IPTMarket, Ownable {
         address buyer = offer.buyer;
         uint256 offerPrice = offer.offerPrice;
         address currency = marketItems[collection][tokenId].currency;
+        if (offer.isVoucher) {
+            delete vouchers[collection][tokenId];
+        }
         delete offers[collection][tokenId];
         _unlockMoney(currency, offerPrice, buyer);
     }

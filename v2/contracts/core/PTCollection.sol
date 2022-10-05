@@ -15,7 +15,7 @@ contract PTCollection is IPTCollection, ERC721URIStorage, EIP712, AccessControl 
 
     // Modifiers
     modifier onlyMarketPlace() {
-        if (!hasRole(MINTER_ROLE, msg.sender)) revert PTNFT__ONLYMARKETPLACE();
+        if (!hasRole(MINTER_ROLE, msg.sender)) revert PTCollection__OnlyMarketPlace();
         _;
     }
     // Events Lazz NFT
@@ -58,7 +58,7 @@ contract PTCollection is IPTCollection, ERC721URIStorage, EIP712, AccessControl 
             _hashTypedDataV4(
                 keccak256(
                     abi.encode(
-                        keccak256("NFTVoucher(uint256 tokenId, string uri, string currency)"),
+                        keccak256("NFTVoucher(uint256 tokenId, string uri, address currency)"),
                         voucher.tokenId,
                         keccak256(bytes(voucher.uri)),
                         keccak256(bytes(abi.encodePacked(voucher.currency)))
