@@ -23,7 +23,7 @@ module.exports = {
         hardhat: {},
         goerli: {
             url: PROVIDER_REN_URL,
-            chainId: 5,
+            chainId: 4,
             accounts: [`${PRIVATE_KEY}`, `${USER2_PRIVATE_KEY}`],
             blockConfirmations: 6,
         },

@@ -657,11 +657,12 @@ contract PTNFTMarketPlace is ReentrancyGuard, Marketplace_Interface {
     /// @notice this allow Buyer to withdraw from their offer and get back it amount .
     /// @param tokenId  which NFT.
     /// @param nftAddress   contract address
-    function withDrawOfferFromLazzMint(
-        address nftAddress,
-        uint256 tokenId,
-        uint256 pid
-    ) public payable nonReentrant {
+
+    function withDrawOfferFromLazzMint(address nftAddress, uint256 tokenId)
+        public
+        payable
+        nonReentrant
+    {
         Offer memory offer = getOffer(nftAddress, tokenId);
         // if()
         if (offer.startAt <= 0) {
@@ -670,11 +671,10 @@ contract PTNFTMarketPlace is ReentrancyGuard, Marketplace_Interface {
         }
         if (offer.offerBy != msg.sender) revert PTNFTMarketPlace__PermissionRequired();
         delete s_offers[nftAddress][tokenId];
-        AllowedCrypto[pid].transfer(msg.sender, offer.offerAmount);
-        // (bool success, ) = offer.offerBy.call{value: offer.offerAmount}("");
-        // if (!success) {
-        //     revert PTNFTMarketPlace__FailToWithDrawAmount();
-        // }
+        (bool success, ) = offer.offerBy.call{value: offer.offerAmount}("");
+        if (!success) {
+            revert PTNFTMarketPlace__FailToWithDrawAmount();
+        }
         emit WithDrawFromOffer(offer.tokenId, nftAddress, offer.offerAmount, offer.offerBy);
     }
 
