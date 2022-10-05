@@ -25,7 +25,7 @@ async function main() {
   let ptMarketAddress: string = ADDRESSES.PTMarket;
   let ptCollectionAddress: string = ADDRESSES.PTCollection;
 
-  if (false) {
+  if (true) {
     PRINT_LOG && console.log("Deploying PTToken ...");
     const ptTokenFactory = await ethers.getContractFactory("PTToken");
     const ptToken = await ptTokenFactory.deploy(TOKEN_NAME, TOKEN_SYMBOL, TOKEN_DECIMALS, TOKEN_INITIAL_SUPPLY);
@@ -33,7 +33,7 @@ async function main() {
     ptTokenAddress = ptToken.address;
   }
 
-  if (false) {
+  if (true) {
     PRINT_LOG && console.log("Deploying PTMarket ...");
     const ptMarketFactory = await ethers.getContractFactory("PTMarket");
     const ptMarket = await ptMarketFactory.deploy();
@@ -41,7 +41,7 @@ async function main() {
     ptMarketAddress = ptMarket.address;
   }
 
-  if (false) {
+  if (true) {
     PRINT_LOG && console.log("Deploying PTCollection ...");
     const ptCollectionFactory = await ethers.getContractFactory("PTCollection");
     const ptCollection = await ptCollectionFactory.deploy(
