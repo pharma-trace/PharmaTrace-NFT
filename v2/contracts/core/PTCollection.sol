@@ -34,10 +34,7 @@ contract PTCollection is IPTCollection, ERC721URIStorage, EIP712, AccessControl 
     /// @notice Redeems an NFTVoucher for an actual NFT, creating it in the process.
     /// @param redeemer The address of the account which will receive the NFT upon success.
     /// @param voucher A signed NFTVoucher that describes the NFT to be redeemed.
-    function redeem(
-        address redeemer,
-        NFTVoucher calldata voucher
-    )
+    function redeem(address redeemer, NFTVoucher calldata voucher)
         external
         onlyMarketPlace /*returns (uint256)*/
     {

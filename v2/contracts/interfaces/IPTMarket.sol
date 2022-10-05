@@ -38,8 +38,14 @@ interface IPTMarket {
         uint256 price,
         bool isVoucher
     );
-    
-    event VoucherWritten(address indexed collection, uint256 indexed tokenId, string uri, address currency, bytes signature);
+
+    event VoucherWritten(
+        address indexed collection,
+        uint256 indexed tokenId,
+        string uri,
+        address currency,
+        bytes signature
+    );
     event CurrencyWhitelisted(address indexed currency, bool addOrRemove);
     event ItemBought(address indexed collection, uint256 indexed tokenId, address buyer);
     event OfferCreated(address indexed collection, uint256 indexed tokenId, address buyer, uint256 offerPrice);

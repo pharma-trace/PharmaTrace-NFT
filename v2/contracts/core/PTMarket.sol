@@ -159,13 +159,7 @@ contract PTMarket is IPTMarket, Ownable {
         offers[collection][tokenId] = Offer(msg.sender, offerPrice, true);
         if (lastOffer.buyer == address(0)) {
             vouchers[collection][tokenId] = voucher;
-            emit VoucherWritten(
-                collection,
-                voucher.tokenId,
-                voucher.uri,
-                voucher.currency,
-                voucher.signature
-            );
+            emit VoucherWritten(collection, voucher.tokenId, voucher.uri, voucher.currency, voucher.signature);
         }
         if (lastBuyer != address(0)) {
             _unlockMoney(voucher.currency, lastPrice, lastBuyer);
@@ -194,15 +188,7 @@ contract PTMarket is IPTMarket, Ownable {
         _checkNFTApproved(collection, tokenId, false);
         delete offers[collection][tokenId];
         if (acceptOrReject) {
-            _executeTrade(
-                collection,
-                tokenId,
-                marketItem.seller,
-                buyer,
-                marketItem.currency,
-                offerPrice,
-                isVoucher
-            );
+            _executeTrade(collection, tokenId, marketItem.seller, buyer, marketItem.currency, offerPrice, isVoucher);
             emit OfferAccepted(collection, tokenId, buyer);
         } else {
             _unlockMoney(marketItem.currency, offerPrice, buyer);
@@ -259,10 +245,7 @@ contract PTMarket is IPTMarket, Ownable {
         bool isVoucher
     ) private view {
         if (isVoucher) {
-            require(
-                IERC721(collection).ownerOf(tokenId) == address(0),
-                "The Voucher is already used"
-            );
+            require(IERC721(collection).ownerOf(tokenId) == address(0), "The Voucher is already used");
         } else {
             require(
                 IERC721(collection).getApproved(tokenId) == address(this),
