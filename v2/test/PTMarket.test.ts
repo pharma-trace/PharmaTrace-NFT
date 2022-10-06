@@ -66,7 +66,7 @@ describe("PTMarket", async function () {
     await mockToken.mintTo(await userA.getAddress(), MINT_AMOUNT);
     await mockToken.mintTo(await userB.getAddress(), MINT_AMOUNT);
     await mockToken.mintTo(await userC.getAddress(), MINT_AMOUNT);
-    
+
     await ptMarket.whitelistCurrency(mockToken.address, true);
   });
 
@@ -90,16 +90,16 @@ describe("PTMarket", async function () {
     it("unwhitelist Currency", async function () {
       await expect(ptMarket.whitelistCurrency(mockToken.address, false)).to.emit(ptMarket, `CurrencyWhitelisted`);
       assert(!(await ptMarket.currencyList(mockToken.address)));
-    
+
       await ptMarket.whitelistCurrency(mockToken.address, true);
     });
   });
 
   describe("listItem", async function () {
     it("listItem with unsupported token", async function () {
-      await expect(ptMarket.listItem(ptCollection.address, 1, unsupportedToken.address, MIN_PRICE, 1, false)).to.revertedWith(
-        "Unsupported token",
-      );
+      await expect(
+        ptMarket.listItem(ptCollection.address, 1, unsupportedToken.address, MIN_PRICE, 1, false),
+      ).to.revertedWith("Unsupported token");
     });
     it("listItem with zero price", async function () {
       await expect(ptMarket.listItem(ptCollection.address, 1, mockToken.address, 0, 1, false)).to.revertedWith(
@@ -129,34 +129,24 @@ describe("PTMarket", async function () {
         "ERC20: insufficient allowance",
       );
     });
-
     it("createLazzOffer overriding with zero price", async function () {
-      await expect(ptMarket.connect(userA).createLazzOffer(ptCollection.address, voucher0, 0)).to.emit(
-        ptMarket,
-        "OfferCreated"
-      ).to.revertedWithCustomError(
-        ptMarket,
-        "PTMarket__LowerPriceThanPrevious"
-      );
+      await expect(ptMarket.connect(userA).createLazzOffer(ptCollection.address, voucher0, 0))
+        .to.revertedWithCustomError(ptMarket, "PTMarket__LowerPriceThanPrevious");
     });
-
     it("createLazzOffer overriding with lower price than previous", async function () {
-      await expect(ptMarket.connect(userA).createLazzOffer(ptCollection.address, voucher0, OFFER_PRICE, {
-        value: OFFER_PRICE
-      })).to.emit(
-        ptMarket,
-        "OfferCreated"
-      ).to.emit(
-        ptMarket,
-        "VoucherWritten"
-      );
-      
-      await expect(ptMarket.connect(userA).createLazzOffer(ptCollection.address, voucher0, OFFER_PRICE, {
-        value: OFFER_PRICE
-      })).to.revertedWithCustomError(
-        ptMarket,
-        "PTMarket__LowerPriceThanPrevious"
-      );
+      await expect(
+        ptMarket.connect(userA).createLazzOffer(ptCollection.address, voucher0, OFFER_PRICE, {
+          value: OFFER_PRICE,
+        }),
+      )
+        .to.emit(ptMarket, "OfferCreated")
+        .to.emit(ptMarket, "VoucherWritten");
+
+      await expect(
+        ptMarket.connect(userA).createLazzOffer(ptCollection.address, voucher0, OFFER_PRICE, {
+          value: OFFER_PRICE,
+        }),
+      ).to.revertedWithCustomError(ptMarket, "PTMarket__LowerPriceThanPrevious");
     });
   });
 });

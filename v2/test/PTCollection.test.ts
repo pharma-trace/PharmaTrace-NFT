@@ -45,8 +45,8 @@ describe("PTCollection", async function () {
       );
     });
     it("Check verifySignature", async function () {
-      // TODO:
       const signer = await ptCollection.verifySignature(voucher);
+      assert(signer === await userA.getAddress());
     });
     it("Successful Redeem", async function () {
       await expect(ptCollection.connect(virtualMarket).redeem(await userA.getAddress(), voucher)).to.emit(
@@ -55,9 +55,9 @@ describe("PTCollection", async function () {
       );
     });
   });
+  
   describe("PTCollection.supportsInterface", async function () {
     it("Check supportsInterface for IERC165", async function () {
-      // just for coverage
       const interfaceIdIERC165 = getInterfaceID(IERC165__factory.createInterface());
       const supportsInterface = await ptCollection.supportsInterface(interfaceIdIERC165._hex);
       assert(supportsInterface);
