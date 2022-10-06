@@ -26,7 +26,7 @@ async function main() {
   let ptMarketAddress: string = ADDRESSES.PTMarket;
   let ptCollectionAddress: string = ADDRESSES.PTCollection;
 
-  if (true) {
+  if (false) {
     PRINT_LOG && console.log("Deploying PTToken ...");
     const ptToken = await deployPTToken(TOKEN_NAME, TOKEN_SYMBOL, TOKEN_DECIMALS, TOKEN_INITIAL_SUPPLY);
     PRINT_LOG && console.log("\t deployed to", ptToken.address);
