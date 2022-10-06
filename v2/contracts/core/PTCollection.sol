@@ -70,12 +70,12 @@ contract PTCollection is IPTCollection, ERC721URIStorage, EIP712, AccessControl 
     /// @notice Verifies the signature for a given NFTVoucher, returning the address of the signer.
     /// @dev Will revert if the signature is invalid. Does not verify that the signer is authorized to mint NFTs.
     /// @param voucher An NFTVoucher describing an unminted NFT.
-    function verifySignature(NFTVoucher calldata voucher) public view onlyMarketPlace returns (address) {
+    function verifySignature(NFTVoucher calldata voucher) public view returns (address) {
         bytes32 digest = _hash(voucher);
         return ECDSA.recover(digest, voucher.signature);
     }
 
-    function supportsInterface(bytes4 interfaceId) public view virtual override(AccessControl, ERC721) returns (bool) {
+    function supportsInterface(bytes4 interfaceId) public view override(AccessControl, ERC721) returns (bool) {
         return ERC721.supportsInterface(interfaceId) || AccessControl.supportsInterface(interfaceId);
     }
 }

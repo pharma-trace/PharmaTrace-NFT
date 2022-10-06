@@ -64,8 +64,8 @@ contract PTMarket is IPTMarket, Ownable {
     ) external whitelisted(currency) nonReentrant(collection, tokenId) {
         require(minPrice > 0, "Listed price should be greater then zero");
         require(isFixedPrice || expiresAt > 0, "expiresAt should not be zero in auction mode");
-        require(IERC721(collection).getApproved(tokenId) == address(this), "It should be allowed to markeplace");
         require(IERC721(collection).ownerOf(tokenId) == msg.sender, "Only owner of NFT will list into market");
+        require(IERC721(collection).getApproved(tokenId) == address(this), "It should be allowed to markeplace");
         uint256 expiry = expiresAt == 0 ? 0 : block.timestamp + (expiresAt * 1 days);
         require(marketItems[collection][tokenId].seller == address(0), "Already listed");
         marketItems[collection][tokenId] = MarketItem(msg.sender, currency, minPrice, expiry, isFixedPrice);
@@ -187,8 +187,7 @@ contract PTMarket is IPTMarket, Ownable {
             NFTVoucher storage voucher = vouchers[collection][tokenId];
             currency = voucher.currency;
             seller = IPTCollection(collection).verifySignature(voucher);
-        }
-        else {
+        } else {
             MarketItem storage marketItem = marketItems[collection][tokenId];
             currency = marketItem.currency;
             seller = marketItem.seller;

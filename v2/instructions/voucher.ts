@@ -1,10 +1,10 @@
-import { TypedDataSigner } from "@ethersproject/abstract-signer";
+import { VoidSigner } from "@ethersproject/abstract-signer";
 import { BigNumber, Signer } from "ethers";
 import { PTCollection } from "../typechain-types";
 
 export async function createVoucher(
   ptCollection: PTCollection,
-  signer: TypedDataSigner,
+  signer: Signer,
   tokenId: BigNumber,
   uri: string,
   currency: string,
@@ -17,7 +17,7 @@ export async function createVoucher(
     name: signingDomain,
     version: signatureVersion,
     verifyingContract: ptCollection.address,
-    chainId
+    chainId,
   };
   const types = {
     NFTVoucher: [
@@ -26,7 +26,7 @@ export async function createVoucher(
       { name: "currency", type: "address" },
     ],
   };
-  const signature = await signer._signTypedData(domain, types, voucher);
+  const signature = await (signer as VoidSigner)._signTypedData(domain, types, voucher);
   const _voucher = {
     ...voucher,
     signature,
