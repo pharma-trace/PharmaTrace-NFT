@@ -78,4 +78,8 @@ contract PTCollection is IPTCollection, ERC721URIStorage, EIP712, AccessControl 
     function supportsInterface(bytes4 interfaceId) public view override(AccessControl, ERC721) returns (bool) {
         return ERC721.supportsInterface(interfaceId) || AccessControl.supportsInterface(interfaceId);
     }
+
+    function exists(uint256 tokenId) public view override returns (bool) {
+        return _exists(tokenId);
+    }
 }

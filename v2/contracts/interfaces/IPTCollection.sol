@@ -9,4 +9,6 @@ interface IPTCollection {
     function redeem(address redeemer, NFTVoucher calldata voucher) external;
 
     function verifySignature(NFTVoucher calldata voucher) external view returns (address);
+
+    function exists(uint256 tokenId) external view returns (bool);
 }

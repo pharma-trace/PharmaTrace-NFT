@@ -142,7 +142,7 @@ contract PTMarket is IPTMarket, Ownable {
         address collection,
         NFTVoucher calldata voucher,
         uint256 offerPrice
-    ) external payable nonReentrant(collection, voucher.tokenId) {
+    ) external payable whitelisted(voucher.currency) nonReentrant(collection, voucher.tokenId) {
         uint256 tokenId = voucher.tokenId;
         _checkNFTApproved(collection, tokenId, true);
 
@@ -157,7 +157,7 @@ contract PTMarket is IPTMarket, Ownable {
         address lastBuyer = lastOffer.buyer;
         _lockMoney(voucher.currency, offerPrice, msg.sender);
         offers[collection][tokenId] = Offer(msg.sender, offerPrice, true);
-        if (lastOffer.buyer == address(0)) {
+        if (lastBuyer == address(0)) {
             vouchers[collection][tokenId] = voucher;
             emit VoucherWritten(collection, voucher.tokenId, voucher.uri, voucher.currency, voucher.signature);
         }
@@ -259,7 +259,7 @@ contract PTMarket is IPTMarket, Ownable {
         bool isVoucher
     ) private view {
         if (isVoucher) {
-            require(IERC721(collection).ownerOf(tokenId) == address(0), "The Voucher is already used");
+            require(!IPTCollection(collection).exists(tokenId), "The Voucher is already used");
         } else {
             require(
                 IERC721(collection).getApproved(tokenId) == address(this),
@@ -275,7 +275,7 @@ contract PTMarket is IPTMarket, Ownable {
         address user
     ) private {
         if (currency == address(0)) {
-            require(msg.value >= amount);
+            require(msg.value >= amount, "Insufficient eth value");
         } else {
             IERC20(currency).transferFrom(user, address(this), amount);
         }
