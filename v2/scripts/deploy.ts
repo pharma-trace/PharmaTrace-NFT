@@ -22,44 +22,34 @@ const COLLECTION_SIGNATURE_VERSION = "1";
 async function main() {
   const accounts = await ethers.getSigners(); // could also do with getNamedAccounts
 
-  let ptTokenAddress: string = ADDRESSES.PTToken;
-  let ptMarketAddress: string = ADDRESSES.PTMarket;
-  let ptCollectionAddress: string = ADDRESSES.PTCollection;
-
   if (false) {
     PRINT_LOG && console.log("Deploying PTToken ...");
     const ptToken = await deployPTToken(TOKEN_NAME, TOKEN_SYMBOL, TOKEN_DECIMALS, TOKEN_INITIAL_SUPPLY);
     PRINT_LOG && console.log("\t deployed to", ptToken.address);
-    ptTokenAddress = ptToken.address;
+    ADDRESSES.PTToken = ptToken.address;
   }
 
   if (true) {
     PRINT_LOG && console.log("Deploying PTMarket ...");
     const ptMarket = await deployPTMarket();
     PRINT_LOG && console.log("\t deployed to", ptMarket.address);
-    ptMarketAddress = ptMarket.address;
+    ADDRESSES.PTMarket = ptMarket.address;
   }
 
   if (true) {
     PRINT_LOG && console.log("Deploying PTCollection ...");
     const ptCollection = await deployPTCollection(
-      ptMarketAddress,
+      ADDRESSES.PTMarket,
       COLLECTION_NAME,
       COLLECTION_SYMBOL,
       COLLECTION_SIGNING_DOMAIN,
       COLLECTION_SIGNATURE_VERSION,
     );
     PRINT_LOG && console.log("\t deployed to", ptCollection.address);
-    ptCollectionAddress = ptCollection.address;
+    ADDRESSES.PTCollection = ptCollection.address;
   }
 
-  const addresses = {
-    PTToken: ptTokenAddress,
-    PTMarket: ptMarketAddress,
-    PTCollection: ptCollectionAddress,
-  };
-
-  fs.writeFileSync(ADDRESS_PATH, JSON.stringify(addresses, null, 4), "utf8");
+  fs.writeFileSync(ADDRESS_PATH, JSON.stringify(ADDRESSES, null, 4), "utf8");
 }
 
 // We recommend this pattern to be able to use async/await everywhere

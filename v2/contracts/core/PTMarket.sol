@@ -178,7 +178,7 @@ contract PTMarket is IPTMarket, Ownable {
     ) external nonReentrant(collection, tokenId) {
         Offer storage offer = offers[collection][tokenId];
         bool isVoucher = offer.isVoucher;
-        require(offer.buyer != address(0), "Such market item doesn't exist");
+        require(offer.buyer != address(0), "Such offer doesn't exist");
         address buyer = offer.buyer;
         uint256 offerPrice = offer.offerPrice;
         address currency;
@@ -193,7 +193,7 @@ contract PTMarket is IPTMarket, Ownable {
             seller = marketItem.seller;
         }
 
-        if (seller == msg.sender) {
+        if (seller != msg.sender) {
             revert PTMarket__NotSeller(seller);
         }
         _checkNFTApproved(collection, tokenId, isVoucher);
@@ -212,7 +212,7 @@ contract PTMarket is IPTMarket, Ownable {
     /// @param tokenId nft tokenId
     function unlistItem(address collection, uint256 tokenId) external nonReentrant(collection, tokenId) {
         MarketItem storage marketItem = marketItems[collection][tokenId];
-        if (marketItem.seller == msg.sender) {
+        if (marketItem.seller != msg.sender) {
             revert PTMarket__NotSeller(marketItem.seller);
         }
         if (offers[collection][tokenId].buyer != address(0)) {
@@ -227,7 +227,7 @@ contract PTMarket is IPTMarket, Ownable {
     /// @param tokenId nft tokenId
     function withdrawOffer(address collection, uint256 tokenId) external nonReentrant(collection, tokenId) {
         Offer storage offer = offers[collection][tokenId];
-        if (offer.buyer == msg.sender) {
+        if (offer.buyer != msg.sender) {
             revert PTMarket__NotOfferer(offer.buyer);
         }
         _cancelOffer(collection, tokenId);
