@@ -34,6 +34,7 @@ describe("PTCollection", async function () {
       NFT_URI,
       ZERO_ADDRESS,
       MIN_PRICE,
+      false,
       COLLECTION_SIGNING_DOMAIN,
       COLLECTION_SIGNATURE_VERSION,
     );

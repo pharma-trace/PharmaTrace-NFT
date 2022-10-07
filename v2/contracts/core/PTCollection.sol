@@ -58,11 +58,12 @@ contract PTCollection is IPTCollection, ERC721URIStorage, EIP712, AccessControl 
             _hashTypedDataV4(
                 keccak256(
                     abi.encode(
-                        keccak256("NFTVoucher(uint256 tokenId,string uri,address currency,uint256 minPrice)"),
+                        keccak256("NFTVoucher(uint256 tokenId,string uri,address currency,uint256 minPrice,bool isFixedPrice)"),
                         voucher.tokenId,
                         keccak256(bytes(voucher.uri)),
                         voucher.currency,
-                        voucher.minPrice
+                        voucher.minPrice,
+                        voucher.isFixedPrice
                     )
                 )
             );

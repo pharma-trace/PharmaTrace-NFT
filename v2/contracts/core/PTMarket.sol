@@ -99,6 +99,33 @@ contract PTMarket is IPTMarket, Ownable {
         emit ItemBought(collection, tokenId, msg.sender);
     }
 
+    /// @notice buy a fixed price of Item
+    /// @param collection nft collection address
+    /// @param tokenId nft tokenId
+    // function buyLazzNFT(address collection, uint256 tokenId) external payable nonReentrant(collection, tokenId) {
+    //     MarketItem storage marketItem = marketItems[collection][tokenId];
+    //     require(marketItem.minPrice > 0, "Such market item doesn't exist");
+
+    //     if (marketItem.expiry != 0 && marketItem.expiry < (block.timestamp + EXPIRY_ALLOW_PERIOD)) {
+    //         revert PTMarket__MarketItemExpired(marketItem.expiry);
+    //     }
+    //     require(marketItem.isFixedPrice, "The item is not fixed price mode");
+    //     _checkNFTApproved(collection, tokenId, false);
+
+    //     _lockMoney(marketItem.currency, marketItem.minPrice, msg.sender);
+    //     _executeTrade(
+    //         collection,
+    //         tokenId,
+    //         marketItem.seller,
+    //         msg.sender,
+    //         marketItem.currency,
+    //         marketItem.minPrice,
+    //         false
+    //     );
+
+    //     emit ItemBought(collection, tokenId, msg.sender);
+    // }
+
     /// @notice create a new offer for existing item
     /// @param collection nft collection address
     /// @param tokenId nft tokenId

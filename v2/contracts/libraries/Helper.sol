@@ -10,6 +10,8 @@ struct NFTVoucher {
     address currency;
     /// @notice Minimum price of the nft.
     uint256 minPrice;
+    /// @notice True if and only if fixed price mode.
+    bool isFixedPrice;
     /// @notice the EIP-712 signature of all other fields in the NFTVoucher struct. For a voucher to be valid, it must be signed by an account with the MINTER_ROLE.
     bytes signature;
 }

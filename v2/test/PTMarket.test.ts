@@ -43,6 +43,7 @@ describe("PTMarket", async function () {
       NFT_URI,
       ZERO_ADDRESS,
       MIN_PRICE,
+      false,
       COLLECTION_SIGNING_DOMAIN,
       COLLECTION_SIGNATURE_VERSION,
     );
@@ -54,6 +55,7 @@ describe("PTMarket", async function () {
       NFT_URI,
       mockToken.address,
       MIN_PRICE,
+      false,
       COLLECTION_SIGNING_DOMAIN,
       COLLECTION_SIGNATURE_VERSION,
     );
@@ -65,6 +67,7 @@ describe("PTMarket", async function () {
       NFT_URI,
       unsupportedToken.address,
       MIN_PRICE,
+      false,
       COLLECTION_SIGNING_DOMAIN,
       COLLECTION_SIGNATURE_VERSION,
     );
@@ -180,6 +183,7 @@ describe("PTMarket", async function () {
           NFT_URI,
           ZERO_ADDRESS,
           MIN_PRICE,
+          false,
           COLLECTION_SIGNING_DOMAIN,
           COLLECTION_SIGNATURE_VERSION,
         );

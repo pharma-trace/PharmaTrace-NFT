@@ -9,6 +9,7 @@ export async function createVoucher(
   uri: string,
   currency: string,
   minPrice: BigNumber,
+  isFixedPrice: Boolean,
   signingDomain: string,
   signatureVersion: string,
 ) {
@@ -26,6 +27,7 @@ export async function createVoucher(
       { name: "uri", type: "string" },
       { name: "currency", type: "address" },
       { name: "minPrice", type: "uint256" },
+      { name: "isFixedPrice", type: "bool" },
     ],
   };
   const signature = await (signer as VoidSigner)._signTypedData(domain, types, voucher);
