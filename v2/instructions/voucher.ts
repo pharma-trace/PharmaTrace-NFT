@@ -13,7 +13,7 @@ export async function createVoucher(
   signingDomain: string,
   signatureVersion: string,
 ) {
-  const voucher = { tokenId, uri, currency, minPrice };
+  const voucher = { tokenId, uri, currency, minPrice, isFixedPrice };
   const chainId = (await ptCollection.provider.getNetwork()).chainId;
   const domain = {
     name: signingDomain,

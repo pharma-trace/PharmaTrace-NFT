@@ -1,5 +1,7 @@
 import { ethers } from "ethers";
 
+export const DENOMINATOR = 1000;
+
 export function getInterfaceID(contractInterface: ethers.utils.Interface) {
   let interfaceID: ethers.BigNumber = ethers.constants.Zero;
   const functions: string[] = Object.keys(contractInterface.functions);

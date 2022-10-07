@@ -5,7 +5,6 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
-
 import "../libraries/Helper.sol";
 import { IPTCollection } from "../interfaces/IPTCollection.sol";
 
@@ -40,6 +39,7 @@ contract PTCollection is IPTCollection, ERC721URIStorage, EIP712, AccessControl 
     {
         // make sure signature is valid and get the address of the signer
         address signer = verifySignature(voucher);
+
 
         // first assign the token to the signer, to establish provenance on-chain
         _safeMint(signer, voucher.tokenId);

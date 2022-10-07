@@ -4,7 +4,6 @@ pragma solidity ^0.8.17;
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-
 import "../libraries/Helper.sol";
 import { IPTMarket } from "../interfaces/IPTMarket.sol";
 import { IPTCollection } from "../interfaces/IPTCollection.sol";
@@ -101,30 +100,34 @@ contract PTMarket is IPTMarket, Ownable {
 
     /// @notice buy a fixed price of Item
     /// @param collection nft collection address
-    /// @param tokenId nft tokenId
-    // function buyLazzNFT(address collection, uint256 tokenId) external payable nonReentrant(collection, tokenId) {
-    //     MarketItem storage marketItem = marketItems[collection][tokenId];
-    //     require(marketItem.minPrice > 0, "Such market item doesn't exist");
+    /// @param voucher voucher of LazzNFT
+    function buyLazzNFT(
+        address collection,
+        NFTVoucher calldata voucher
+    ) external payable nonReentrant(collection, voucher.tokenId) {
+        require(voucher.isFixedPrice, "This voucher is not in fixed price mode");
+        
+        uint256 tokenId = voucher.tokenId;
+        _checkNFTApproved(collection, tokenId, true);
+        address seller = IPTCollection(collection).verifySignature(voucher);
+        
+        _lockMoney(voucher.currency, voucher.minPrice, msg.sender);
 
-    //     if (marketItem.expiry != 0 && marketItem.expiry < (block.timestamp + EXPIRY_ALLOW_PERIOD)) {
-    //         revert PTMarket__MarketItemExpired(marketItem.expiry);
-    //     }
-    //     require(marketItem.isFixedPrice, "The item is not fixed price mode");
-    //     _checkNFTApproved(collection, tokenId, false);
+        vouchers[collection][tokenId] = voucher;
+        emit VoucherWritten(collection, voucher.tokenId, voucher.uri, voucher.currency, voucher.signature);
 
-    //     _lockMoney(marketItem.currency, marketItem.minPrice, msg.sender);
-    //     _executeTrade(
-    //         collection,
-    //         tokenId,
-    //         marketItem.seller,
-    //         msg.sender,
-    //         marketItem.currency,
-    //         marketItem.minPrice,
-    //         false
-    //     );
+        _executeTrade(
+            collection,
+            voucher.tokenId,
+            seller,
+            msg.sender,
+            voucher.currency,
+            voucher.minPrice,
+            true
+        );
 
-    //     emit ItemBought(collection, tokenId, msg.sender);
-    // }
+        emit ItemBought(collection, voucher.tokenId, msg.sender);
+    }
 
     /// @notice create a new offer for existing item
     /// @param collection nft collection address
@@ -170,10 +173,11 @@ contract PTMarket is IPTMarket, Ownable {
         NFTVoucher calldata voucher,
         uint256 offerPrice
     ) external payable whitelisted(voucher.currency) nonReentrant(collection, voucher.tokenId) {
+        require(!voucher.isFixedPrice, "This voucher is in fixed price mode");
         uint256 tokenId = voucher.tokenId;
         _checkNFTApproved(collection, tokenId, true);
 
-        uint256 lastPrice = 0;
+        uint256 lastPrice = voucher.minPrice - 1;
         Offer storage lastOffer = offers[collection][tokenId];
         if (lastOffer.buyer != address(0)) {
             lastPrice = lastOffer.offerPrice;

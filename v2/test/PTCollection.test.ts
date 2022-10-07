@@ -37,7 +37,7 @@ describe("PTCollection", async function () {
       false,
       COLLECTION_SIGNING_DOMAIN,
       COLLECTION_SIGNATURE_VERSION,
-    );
+    ) as NFTVoucherStruct;
   });
 
   describe("PTCollection.redeem", async function () {
