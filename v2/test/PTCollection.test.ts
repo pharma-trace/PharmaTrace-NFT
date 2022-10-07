@@ -16,6 +16,7 @@ describe("PTCollection", async function () {
   const COLLECTION_SIGNING_DOMAIN = "PT-Voucher";
   const COLLECTION_SIGNATURE_VERSION = "1";
   const NFT_URI = "ipfs://QmQFcbsk1Vjt1n361MceM5iNeMTuFzuVUZ1hKFWD7ZCpuC";
+  const MIN_PRICE = ethers.utils.parseEther("10");
 
   before(async () => {
     [admin, virtualMarket, userA, userB] = await ethers.getSigners(); // could also do with getNamedAccounts
@@ -32,6 +33,7 @@ describe("PTCollection", async function () {
       BigNumber.from(1),
       NFT_URI,
       ZERO_ADDRESS,
+      MIN_PRICE,
       COLLECTION_SIGNING_DOMAIN,
       COLLECTION_SIGNATURE_VERSION,
     );
@@ -46,7 +48,7 @@ describe("PTCollection", async function () {
     });
     it("Check verifySignature", async function () {
       const signer = await ptCollection.verifySignature(voucher);
-      assert(signer === await userA.getAddress());
+      assert(signer === (await userA.getAddress()));
     });
     it("Successful Redeem", async function () {
       await expect(ptCollection.connect(virtualMarket).redeem(await userA.getAddress(), voucher)).to.emit(
@@ -55,7 +57,7 @@ describe("PTCollection", async function () {
       );
     });
   });
-  
+
   describe("PTCollection.supportsInterface", async function () {
     it("Check supportsInterface for IERC165", async function () {
       const interfaceIdIERC165 = getInterfaceID(IERC165__factory.createInterface());

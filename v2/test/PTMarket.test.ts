@@ -2,7 +2,7 @@ import { assert, expect } from "chai";
 import { BigNumber, Signer } from "ethers";
 import { ethers } from "hardhat";
 import { MockToken, PTCollection, PTMarket } from "../typechain-types";
-import { deployPTCollection, deployPTMarket, createVoucher, deployMockToken } from "../instructions";
+import { deployPTCollection, deployPTMarket, createVoucher, deployMockToken, selfTrade } from "../instructions";
 import { NFTVoucherStruct } from "../typechain-types/contracts/core/PTCollection";
 import { ZERO_ADDRESS } from "./constants";
 
@@ -42,6 +42,7 @@ describe("PTMarket", async function () {
       tokenIdNonce,
       NFT_URI,
       ZERO_ADDRESS,
+      MIN_PRICE,
       COLLECTION_SIGNING_DOMAIN,
       COLLECTION_SIGNATURE_VERSION,
     );
@@ -52,6 +53,7 @@ describe("PTMarket", async function () {
       tokenIdNonce,
       NFT_URI,
       mockToken.address,
+      MIN_PRICE,
       COLLECTION_SIGNING_DOMAIN,
       COLLECTION_SIGNATURE_VERSION,
     );
@@ -62,6 +64,7 @@ describe("PTMarket", async function () {
       tokenIdNonce,
       NFT_URI,
       unsupportedToken.address,
+      MIN_PRICE,
       COLLECTION_SIGNING_DOMAIN,
       COLLECTION_SIGNATURE_VERSION,
     );
@@ -89,7 +92,7 @@ describe("PTMarket", async function () {
   describe("whitelistCurrency", async function () {
     it("whitelistCurrency with non-owner", async function () {
       await expect(ptMarket.connect(userA).whitelistCurrency(mockToken.address, true)).to.rejectedWith(
-        "Ownable: caller is not the owner"
+        "Ownable: caller is not the owner",
       );
     });
     it("whitelistCurrency", async function () {
@@ -106,23 +109,24 @@ describe("PTMarket", async function () {
 
   describe("createLazzOffer", async function () {
     it("createLazzOffer with unsupported token", async function () {
-      await expect(ptMarket.connect(userB).createLazzOffer(ptCollection.address, unsupportedVoucher, OFFER_PRICE)).to.revertedWith(
-        "Unsupported token",
-      );
+      await expect(
+        ptMarket.connect(userB).createLazzOffer(ptCollection.address, unsupportedVoucher, OFFER_PRICE),
+      ).to.revertedWith("Unsupported token");
     });
     it("createLazzOffer without eth", async function () {
-      await expect(ptMarket.connect(userB).createLazzOffer(ptCollection.address, voucher0, OFFER_PRICE)).to.revertedWith(
-        "Insufficient eth value",
-      );
+      await expect(
+        ptMarket.connect(userB).createLazzOffer(ptCollection.address, voucher0, OFFER_PRICE),
+      ).to.revertedWith("Insufficient eth value");
     });
     it("createLazzOffer without token approve", async function () {
-      await expect(ptMarket.connect(userB).createLazzOffer(ptCollection.address, voucher1, OFFER_PRICE)).to.revertedWith(
-        "ERC20: insufficient allowance",
-      );
+      await expect(
+        ptMarket.connect(userB).createLazzOffer(ptCollection.address, voucher1, OFFER_PRICE),
+      ).to.revertedWith("ERC20: insufficient allowance");
     });
     it("createLazzOffer overwrite with zero price", async function () {
-      await expect(ptMarket.connect(userB).createLazzOffer(ptCollection.address, voucher0, 0))
-        .to.revertedWithCustomError(ptMarket, "PTMarket__LowerPriceThanPrevious");
+      await expect(
+        ptMarket.connect(userB).createLazzOffer(ptCollection.address, voucher0, 0),
+      ).to.revertedWithCustomError(ptMarket, "PTMarket__LowerPriceThanPrevious");
     });
     it("createLazzOffer overwrite with lower price than previous", async function () {
       await expect(
@@ -152,14 +156,12 @@ describe("PTMarket", async function () {
         ptMarket.connect(userC).createLazzOffer(ptCollection.address, voucher0, priceOverwrite, {
           value: priceOverwrite,
         }),
-      )
-          .to.emit(ptMarket, "OfferCreated");
+      ).to.emit(ptMarket, "OfferCreated");
     });
     afterEach(async () => {
       try {
         await ptMarket.connect(userB).withdrawOffer(ptCollection.address, voucher0.tokenId);
-      }
-      catch {}
+      } catch {}
     });
   });
   describe("acceptOffer", async function () {
@@ -177,6 +179,7 @@ describe("PTMarket", async function () {
           tokenIdNonce,
           NFT_URI,
           ZERO_ADDRESS,
+          MIN_PRICE,
           COLLECTION_SIGNING_DOMAIN,
           COLLECTION_SIGNATURE_VERSION,
         );
@@ -190,18 +193,19 @@ describe("PTMarket", async function () {
           ptMarket.connect(userC).acceptOffer(ptCollection.address, voucher.tokenId, true),
         ).to.revertedWithCustomError(ptMarket, "PTMarket__NotSeller");
       });
-      it("accept LazzOffer with unapproved NFT", async function () { // TODO:
-        // await ptCollection.connect(userA).approve(await userC.getAddress(), voucher.tokenId);
-        // await expect(ptMarket.connect(userA).acceptOffer(ptCollection.address, voucher.tokenId, true)).to.rejectedWith(
-        //   "Collection is not approved to the market",
-        // );
-      });
-      it("accept LazzOffer success", async function () { // TODO:
+      // TODO:
+      // it("accept LazzOffer with unapproved NFT", async function () {
+      //   await ptCollection.connect(userA).approve(await userC.getAddress(), voucher.tokenId);
+      //   await expect(ptMarket.connect(userA).acceptOffer(ptCollection.address, voucher.tokenId, true)).to.rejectedWith(
+      //     "Collection is not approved to the market",
+      //   );
+      // });
+      it("accept LazzOffer success", async function () {
         await expect(ptMarket.connect(userA).acceptOffer(ptCollection.address, voucher.tokenId, true))
-        .to.emit(ptMarket, "TradeExecuted")
-        .to.emit(ptMarket, "OfferAccepted");
+          .to.emit(ptMarket, "TradeExecuted")
+          .to.emit(ptMarket, "OfferAccepted");
       });
-      it("reject LazzOffer success", async function () { // TODO:
+      it("reject LazzOffer success", async function () {
         await expect(ptMarket.connect(userA).acceptOffer(ptCollection.address, voucher.tokenId, false)).to.emit(
           ptMarket,
           "OfferRejected",
@@ -210,15 +214,17 @@ describe("PTMarket", async function () {
       afterEach(async () => {
         try {
           await ptMarket.connect(userB).withdrawOffer(ptCollection.address, voucher.tokenId);
-        }
-        catch {}
+        } catch {}
       });
     });
-    describe("accept normal Offer", async function () {
-    });
+    describe("accept normal Offer", async function () {});
   });
 
   describe("listItem", async function () {
+    before(async () => {
+      await selfTrade(ptMarket, userA, voucher0);
+      await selfTrade(ptMarket, userA, voucher1);
+    });
     it("listItem with unsupported token", async function () {
       await expect(
         ptMarket.listItem(ptCollection.address, 1, unsupportedToken.address, MIN_PRICE, 1, false),

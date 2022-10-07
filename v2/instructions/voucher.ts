@@ -8,10 +8,11 @@ export async function createVoucher(
   tokenId: BigNumber,
   uri: string,
   currency: string,
+  minPrice: BigNumber,
   signingDomain: string,
   signatureVersion: string,
 ) {
-  const voucher = { tokenId, uri, currency };
+  const voucher = { tokenId, uri, currency, minPrice };
   const chainId = (await ptCollection.provider.getNetwork()).chainId;
   const domain = {
     name: signingDomain,
@@ -24,6 +25,7 @@ export async function createVoucher(
       { name: "tokenId", type: "uint256" },
       { name: "uri", type: "string" },
       { name: "currency", type: "address" },
+      { name: "minPrice", type: "uint256" },
     ],
   };
   const signature = await (signer as VoidSigner)._signTypedData(domain, types, voucher);
