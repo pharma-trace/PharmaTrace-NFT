@@ -27,7 +27,7 @@ describe("PTCollection", async function () {
       COLLECTION_SIGNING_DOMAIN,
       COLLECTION_SIGNATURE_VERSION,
     );
-    voucher = await createVoucher(
+    voucher = (await createVoucher(
       ptCollection,
       userA,
       BigNumber.from(1),
@@ -37,7 +37,7 @@ describe("PTCollection", async function () {
       false,
       COLLECTION_SIGNING_DOMAIN,
       COLLECTION_SIGNATURE_VERSION,
-    ) as NFTVoucherStruct;
+    )) as NFTVoucherStruct;
   });
 
   describe("PTCollection.redeem", async function () {

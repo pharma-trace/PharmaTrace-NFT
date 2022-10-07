@@ -40,7 +40,6 @@ contract PTCollection is IPTCollection, ERC721URIStorage, EIP712, AccessControl 
         // make sure signature is valid and get the address of the signer
         address signer = verifySignature(voucher);
 
-
         // first assign the token to the signer, to establish provenance on-chain
         _safeMint(signer, voucher.tokenId);
         _setTokenURI(voucher.tokenId, voucher.uri);
@@ -58,7 +57,9 @@ contract PTCollection is IPTCollection, ERC721URIStorage, EIP712, AccessControl 
             _hashTypedDataV4(
                 keccak256(
                     abi.encode(
-                        keccak256("NFTVoucher(uint256 tokenId,string uri,address currency,uint256 minPrice,bool isFixedPrice)"),
+                        keccak256(
+                            "NFTVoucher(uint256 tokenId,string uri,address currency,uint256 minPrice,bool isFixedPrice)"
+                        ),
                         voucher.tokenId,
                         keccak256(bytes(voucher.uri)),
                         voucher.currency,

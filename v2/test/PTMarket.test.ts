@@ -2,7 +2,14 @@ import { assert, expect } from "chai";
 import { BigNumber, Signer } from "ethers";
 import { ethers } from "hardhat";
 import { MockToken, PTCollection, PTMarket } from "../typechain-types";
-import { deployPTCollection, deployPTMarket, createVoucher, deployMockToken, selfTrade, DENOMINATOR } from "../instructions";
+import {
+  deployPTCollection,
+  deployPTMarket,
+  createVoucher,
+  deployMockToken,
+  selfTrade,
+  DENOMINATOR,
+} from "../instructions";
 import { NFTVoucherStruct } from "../typechain-types/contracts/core/PTCollection";
 import { ZERO_ADDRESS } from "./constants";
 
@@ -25,7 +32,7 @@ describe("PTMarket", async function () {
 
   const createNewVoucher = async (user: Signer, currency: string, minPrice: BigNumber, isFixedPrice: Boolean) => {
     tokenIdNonce = tokenIdNonce.add(1);
-    return await createVoucher(
+    return (await createVoucher(
       ptCollection,
       user,
       tokenIdNonce,
@@ -35,8 +42,8 @@ describe("PTMarket", async function () {
       isFixedPrice,
       COLLECTION_SIGNING_DOMAIN,
       COLLECTION_SIGNATURE_VERSION,
-    ) as NFTVoucherStruct;
-  }
+    )) as NFTVoucherStruct;
+  };
 
   before(async () => {
     [admin, userA, userB, userC] = await ethers.getSigners(); // could also do with getNamedAccounts
@@ -89,7 +96,10 @@ describe("PTMarket", async function () {
   });
 
   describe("createLazzOffer", async function () {
-    let voucher0: NFTVoucherStruct, voucher1: NFTVoucherStruct, voucher2: NFTVoucherStruct, unsupportedVoucher: NFTVoucherStruct;
+    let voucher0: NFTVoucherStruct,
+      voucher1: NFTVoucherStruct,
+      voucher2: NFTVoucherStruct,
+      unsupportedVoucher: NFTVoucherStruct;
     before(async () => {
       voucher0 = await createNewVoucher(userA, ZERO_ADDRESS, MIN_PRICE, false);
       voucher1 = await createNewVoucher(userA, mockToken.address, MIN_PRICE, false);
@@ -157,7 +167,7 @@ describe("PTMarket", async function () {
       } catch {}
     });
   });
-  
+
   describe("createOffer", async function () {
     let tokenId: BigNumber;
     before(async () => {
@@ -167,9 +177,9 @@ describe("PTMarket", async function () {
     });
 
     it("createOffer with unlisted item", async function () {
-      await expect(
-        ptMarket.connect(userB).createOffer(ptCollection.address, tokenId, OFFER_PRICE),
-      ).to.rejectedWith("Such market item doesn't exist");
+      await expect(ptMarket.connect(userB).createOffer(ptCollection.address, tokenId, OFFER_PRICE)).to.rejectedWith(
+        "Such market item doesn't exist",
+      );
     });
     // // TODO:
     // it("createOffer after expiry", async function () {
@@ -178,17 +188,17 @@ describe("PTMarket", async function () {
     it("createOffer if fixed price mode", async function () {
       await ptCollection.connect(userA).approve(ptMarket.address, tokenId);
       await ptMarket.connect(userA).listItem(ptCollection.address, tokenId, ZERO_ADDRESS, MIN_PRICE, 1, true);
-      await expect(
-        ptMarket.connect(userB).createOffer(ptCollection.address, tokenId, OFFER_PRICE),
-      ).to.rejectedWith("The item is fixed price mode");
+      await expect(ptMarket.connect(userB).createOffer(ptCollection.address, tokenId, OFFER_PRICE)).to.rejectedWith(
+        "The item is fixed price mode",
+      );
     });
     it("createOffer unapproved NFT", async function () {
       await ptCollection.connect(userA).approve(ptMarket.address, tokenId);
       await ptMarket.connect(userA).listItem(ptCollection.address, tokenId, ZERO_ADDRESS, MIN_PRICE, 1, false);
       await ptCollection.connect(userA).approve(await userC.getAddress(), tokenId);
-      await expect(
-        ptMarket.connect(userB).createOffer(ptCollection.address, tokenId, OFFER_PRICE),
-      ).to.rejectedWith("Collection is not approved to the market");
+      await expect(ptMarket.connect(userB).createOffer(ptCollection.address, tokenId, OFFER_PRICE)).to.rejectedWith(
+        "Collection is not approved to the market",
+      );
     });
     it("createOffer with lower price than minPrice", async function () {
       await ptCollection.connect(userA).approve(ptMarket.address, tokenId);
@@ -211,9 +221,7 @@ describe("PTMarket", async function () {
     });
     it("createOffer with token", async function () {
       await ptCollection.connect(userA).approve(ptMarket.address, tokenId);
-      await ptMarket
-        .connect(userA)
-        .listItem(ptCollection.address, tokenId, mockToken.address, MIN_PRICE, 1, false);
+      await ptMarket.connect(userA).listItem(ptCollection.address, tokenId, mockToken.address, MIN_PRICE, 1, false);
       await mockToken.mintTo(await userB.getAddress(), MINT_AMOUNT);
 
       await mockToken.connect(userB).approve(ptMarket.address, OFFER_PRICE);
@@ -239,9 +247,7 @@ describe("PTMarket", async function () {
     });
     it("createOffer overwrite with token", async function () {
       await ptCollection.connect(userA).approve(ptMarket.address, tokenId);
-      await ptMarket
-        .connect(userA)
-        .listItem(ptCollection.address, tokenId, mockToken.address, MIN_PRICE, 1, false);
+      await ptMarket.connect(userA).listItem(ptCollection.address, tokenId, mockToken.address, MIN_PRICE, 1, false);
       await mockToken.mintTo(await userB.getAddress(), MINT_AMOUNT);
       await mockToken.mintTo(await userC.getAddress(), MINT_AMOUNT);
 
@@ -354,11 +360,11 @@ describe("PTMarket", async function () {
         await expect(ptMarket.connect(userA).acceptOffer(ptCollection.address, tokenId, true))
           .to.emit(ptMarket, "TradeExecuted")
           .to.emit(ptMarket, "OfferAccepted");
-  
+
         await ptCollection.connect(userB).approve(await userA.getAddress(), tokenId);
         await ptCollection.connect(userA).transferFrom(await userB.getAddress(), await userA.getAddress(), tokenId);
       });
-  
+
       afterEach(async () => {
         try {
           await ptMarket.connect(userA).unlistItem(ptCollection.address, tokenId);
@@ -428,7 +434,7 @@ describe("PTMarket", async function () {
       } catch {}
     });
   });
-  
+
   describe("buyItem", async function () {
     let tokenId: BigNumber;
     before(async () => {
@@ -448,18 +454,14 @@ describe("PTMarket", async function () {
     // });
     it("buyItem if not fixed price", async function () {
       await ptCollection.connect(userA).approve(ptMarket.address, tokenId);
-      await ptMarket
-        .connect(userA)
-        .listItem(ptCollection.address, tokenId, mockToken.address, MIN_PRICE, 1, false);
+      await ptMarket.connect(userA).listItem(ptCollection.address, tokenId, mockToken.address, MIN_PRICE, 1, false);
       await expect(ptMarket.connect(userB).buyItem(ptCollection.address, tokenId)).to.rejectedWith(
         "The item is not fixed price mode",
       );
     });
     it("buyItem unapproved NFT", async function () {
       await ptCollection.connect(userA).approve(ptMarket.address, tokenId);
-      await ptMarket
-        .connect(userA)
-        .listItem(ptCollection.address, tokenId, mockToken.address, MIN_PRICE, 1, true);
+      await ptMarket.connect(userA).listItem(ptCollection.address, tokenId, mockToken.address, MIN_PRICE, 1, true);
       await ptCollection.connect(userA).approve(await userC.getAddress(), tokenId);
       await expect(ptMarket.connect(userB).buyItem(ptCollection.address, tokenId)).to.rejectedWith(
         "Collection is not approved to the market",
@@ -467,9 +469,7 @@ describe("PTMarket", async function () {
     });
     it("buyItem without approve token", async function () {
       await ptCollection.connect(userA).approve(ptMarket.address, tokenId);
-      await ptMarket
-        .connect(userA)
-        .listItem(ptCollection.address, tokenId, mockToken.address, MIN_PRICE, 1, true);
+      await ptMarket.connect(userA).listItem(ptCollection.address, tokenId, mockToken.address, MIN_PRICE, 1, true);
       await expect(ptMarket.connect(userB).buyItem(ptCollection.address, tokenId)).to.rejectedWith(
         "ERC20: insufficient allowance",
       );
@@ -484,9 +484,7 @@ describe("PTMarket", async function () {
     describe("successful buyings", async () => {
       it("buyItem with token", async function () {
         await ptCollection.connect(userA).approve(ptMarket.address, tokenId);
-        await ptMarket
-          .connect(userA)
-          .listItem(ptCollection.address, tokenId, mockToken.address, MIN_PRICE, 1, true);
+        await ptMarket.connect(userA).listItem(ptCollection.address, tokenId, mockToken.address, MIN_PRICE, 1, true);
         await mockToken.mintTo(await userB.getAddress(), MINT_AMOUNT);
 
         const balanceBuyerBefore = await mockToken.balanceOf(await userB.getAddress());
@@ -547,7 +545,7 @@ describe("PTMarket", async function () {
       } catch {}
     });
   });
-  
+
   describe("buyLazzNFT", async function () {
     let voucher0: NFTVoucherStruct, voucher1: NFTVoucherStruct;
     before(async () => {
@@ -556,22 +554,18 @@ describe("PTMarket", async function () {
     });
     it("buyLazzNFT in not fixed price mode", async () => {
       await expect(ptMarket.connect(userB).buyLazzNFT(ptCollection.address, voucher0)).to.rejectedWith(
-        "This voucher is not in fixed price mode"
+        "This voucher is not in fixed price mode",
       );
     });
     it("buyLazzNFT success", async () => {
-      await expect(ptMarket.connect(userB).buyLazzNFT(ptCollection.address, voucher1, {
-        value: MIN_PRICE
-      })).to.emit(
-        ptMarket,
-        "VoucherWritten"
-      ).to.emit(
-        ptMarket,
-        "ItemBought"
-      ).to.emit(
-        ptMarket,
-        "TradeExecuted"
-      );
+      await expect(
+        ptMarket.connect(userB).buyLazzNFT(ptCollection.address, voucher1, {
+          value: MIN_PRICE,
+        }),
+      )
+        .to.emit(ptMarket, "VoucherWritten")
+        .to.emit(ptMarket, "ItemBought")
+        .to.emit(ptMarket, "TradeExecuted");
     });
   });
 

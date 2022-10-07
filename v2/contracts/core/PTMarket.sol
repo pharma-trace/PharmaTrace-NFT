@@ -101,30 +101,23 @@ contract PTMarket is IPTMarket, Ownable {
     /// @notice buy a fixed price of Item
     /// @param collection nft collection address
     /// @param voucher voucher of LazzNFT
-    function buyLazzNFT(
-        address collection,
-        NFTVoucher calldata voucher
-    ) external payable nonReentrant(collection, voucher.tokenId) {
+    function buyLazzNFT(address collection, NFTVoucher calldata voucher)
+        external
+        payable
+        nonReentrant(collection, voucher.tokenId)
+    {
         require(voucher.isFixedPrice, "This voucher is not in fixed price mode");
-        
+
         uint256 tokenId = voucher.tokenId;
         _checkNFTApproved(collection, tokenId, true);
         address seller = IPTCollection(collection).verifySignature(voucher);
-        
+
         _lockMoney(voucher.currency, voucher.minPrice, msg.sender);
 
         vouchers[collection][tokenId] = voucher;
         emit VoucherWritten(collection, voucher.tokenId, voucher.uri, voucher.currency, voucher.signature);
 
-        _executeTrade(
-            collection,
-            voucher.tokenId,
-            seller,
-            msg.sender,
-            voucher.currency,
-            voucher.minPrice,
-            true
-        );
+        _executeTrade(collection, voucher.tokenId, seller, msg.sender, voucher.currency, voucher.minPrice, true);
 
         emit ItemBought(collection, voucher.tokenId, msg.sender);
     }
