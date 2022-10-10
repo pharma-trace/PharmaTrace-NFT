@@ -4,6 +4,8 @@ pragma solidity ^0.8.17;
 import "../libraries/Helper.sol";
 
 interface IPTMarket {
+    function whitelistCollection(address collection) external;
+
     // structs
     struct MarketItem {
         address seller;
@@ -45,9 +47,10 @@ interface IPTMarket {
         address currency,
         bytes signature
     );
+    event CollectionWhitelisted(address indexed collection);
     event CurrencyWhitelisted(address indexed currency, bool addOrRemove);
-    event ItemBought(address indexed collection, uint256 indexed tokenId, address buyer);
-    event OfferCreated(address indexed collection, uint256 indexed tokenId, address buyer, uint256 offerPrice);
+    event ItemBought(address indexed collection, uint256 indexed tokenId, address buyer, bool isVoucher);
+    event OfferCreated(address indexed collection, uint256 indexed tokenId, address buyer, uint256 offerPrice, bool isVoucher);
     event OfferAccepted(address indexed collection, uint256 indexed tokenId, address buyer);
     event OfferRejected(address indexed collection, uint256 indexed tokenId, address buyer);
     event ItemUnlisted(address indexed collection, uint256 indexed tokenId);

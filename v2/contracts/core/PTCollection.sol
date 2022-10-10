@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "../libraries/Helper.sol";
 import { IPTCollection } from "../interfaces/IPTCollection.sol";
+import { IPTMarket } from "../interfaces/IPTMarket.sol";
 
 contract PTCollection is IPTCollection, ERC721URIStorage, EIP712, AccessControl {
     // State variables
@@ -28,6 +29,7 @@ contract PTCollection is IPTCollection, ERC721URIStorage, EIP712, AccessControl 
         string memory signatureVersion
     ) ERC721(name, symbol) EIP712(signingDomain, signatureVersion) {
         _setupRole(MINTER_ROLE, marketPlace); // this for ristricty only audit contract will call this
+        IPTMarket(marketPlace).whitelistCollection(address(this));
     }
 
     /// @notice Redeems an NFTVoucher for an actual NFT, creating it in the process.

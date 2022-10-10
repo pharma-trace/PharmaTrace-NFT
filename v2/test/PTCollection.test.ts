@@ -1,7 +1,7 @@
 import { assert, expect } from "chai";
 import { BigNumber, Signer } from "ethers";
 import { ethers } from "hardhat";
-import { IERC165__factory, IERC721__factory, PTCollection } from "../typechain-types";
+import { IAccessControl__factory, IERC165__factory, IERC721__factory, PTCollection } from "../typechain-types";
 import { deployPTCollection, createVoucher, getInterfaceID } from "../instructions";
 import { NFTVoucherStruct } from "../typechain-types/contracts/core/PTCollection";
 import { ZERO_ADDRESS } from "./constants";
@@ -63,6 +63,11 @@ describe("PTCollection", async function () {
     it("Check supportsInterface for IERC165", async function () {
       const interfaceIdIERC165 = getInterfaceID(IERC165__factory.createInterface());
       const supportsInterface = await ptCollection.supportsInterface(interfaceIdIERC165._hex);
+      assert(supportsInterface);
+    });
+    it("Check supportsInterface for IAccessControl", async function () {
+      const interfaceIdIAccessControl = getInterfaceID(IAccessControl__factory.createInterface());
+      const supportsInterface = await ptCollection.supportsInterface(interfaceIdIAccessControl._hex);
       assert(supportsInterface);
     });
     it("Check supportsInterface for invalid", async function () {

@@ -39,6 +39,12 @@ contract PTMarket is IPTMarket, Ownable {
     }
 
     /// @notice this function is used whitelist/unwhitlist market supporting ERC20 tokens
+    /// @param collection address of Collection
+    function whitelistCollection(address collection) override external onlyOwner {
+        emit CollectionWhitelisted(collection);
+    }
+
+    /// @notice this function is used whitelist/unwhitlist market supporting ERC20 tokens
     /// @param currency address of ERC20 token
     /// @param addOrRemove true => whitelist, false => unwhitelist
     function whitelistCurrency(address currency, bool addOrRemove) public onlyOwner {
@@ -95,7 +101,7 @@ contract PTMarket is IPTMarket, Ownable {
             false
         );
 
-        emit ItemBought(collection, tokenId, msg.sender);
+        emit ItemBought(collection, tokenId, msg.sender, false);
     }
 
     /// @notice buy a fixed price of Item
@@ -119,7 +125,7 @@ contract PTMarket is IPTMarket, Ownable {
 
         _executeTrade(collection, voucher.tokenId, seller, msg.sender, voucher.currency, voucher.minPrice, true);
 
-        emit ItemBought(collection, voucher.tokenId, msg.sender);
+        emit ItemBought(collection, voucher.tokenId, msg.sender, true);
     }
 
     /// @notice create a new offer for existing item
@@ -154,7 +160,7 @@ contract PTMarket is IPTMarket, Ownable {
         if (lastBuyer != address(0)) {
             _unlockMoney(marketItem.currency, lastPrice, lastBuyer);
         }
-        emit OfferCreated(collection, tokenId, msg.sender, offerPrice);
+        emit OfferCreated(collection, tokenId, msg.sender, offerPrice, false);
     }
 
     /// @notice create a new offer for lazz NFT
@@ -188,7 +194,7 @@ contract PTMarket is IPTMarket, Ownable {
         if (lastBuyer != address(0)) {
             _unlockMoney(voucher.currency, lastPrice, lastBuyer);
         }
-        emit OfferCreated(collection, tokenId, msg.sender, offerPrice);
+        emit OfferCreated(collection, tokenId, msg.sender, offerPrice, true);
     }
 
     /// @notice accept/reject existing offer
@@ -283,7 +289,7 @@ contract PTMarket is IPTMarket, Ownable {
         bool isVoucher
     ) private view {
         if (isVoucher) {
-            require(!IPTCollection(collection).exists(tokenId), "The Voucher is already used");
+            require(!IPTCollection(collection).exists(tokenId), "The Voucher is already minted");
         } else {
             require(
                 IERC721(collection).getApproved(tokenId) == address(this),
@@ -293,7 +299,6 @@ contract PTMarket is IPTMarket, Ownable {
     }
 
     function _lockMoney(
-        // attention! don't call this twice in one function
         address currency,
         uint256 amount,
         address user
