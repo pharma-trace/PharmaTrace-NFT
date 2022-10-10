@@ -62,6 +62,7 @@ describe("PTMarket", async function () {
     unsupportedToken = await deployMockToken("Unsupported Token", "INVALID", DECIMALS);
 
     await ptMarket.whitelistCurrency(mockToken.address, true);
+    await ptMarket.whitelistCollection(ptCollection.address);
   });
 
   describe("MockToken", async function () {

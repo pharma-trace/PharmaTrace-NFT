@@ -29,7 +29,6 @@ contract PTCollection is IPTCollection, ERC721URIStorage, EIP712, AccessControl 
         string memory signatureVersion
     ) ERC721(name, symbol) EIP712(signingDomain, signatureVersion) {
         _setupRole(MINTER_ROLE, marketPlace); // this for ristricty only audit contract will call this
-        IPTMarket(marketPlace).whitelistCollection(address(this));
     }
 
     /// @notice Redeems an NFTVoucher for an actual NFT, creating it in the process.

@@ -1,4 +1,4 @@
-import { ethers } from "hardhat";
+import { artifacts, ethers } from "hardhat";
 import * as fs from "fs";
 
 import { deployPTToken, deployPTMarket, deployPTCollection } from "../instructions";
@@ -45,6 +45,9 @@ async function main() {
       COLLECTION_SIGNING_DOMAIN,
       COLLECTION_SIGNATURE_VERSION,
     );
+    const ptMarket = await ethers.getContractAt("PTMarket", ADDRESSES.PTMarket);
+    ptMarket.whitelistCollection(ptCollection.address);
+
     PRINT_LOG && console.log("\t deployed to", ptCollection.address);
     ADDRESSES.PTCollection = ptCollection.address;
   }
