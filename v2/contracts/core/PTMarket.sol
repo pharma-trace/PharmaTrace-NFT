@@ -245,10 +245,11 @@ contract PTMarket is IPTMarket, Ownable {
         if (marketItem.seller != msg.sender) {
             revert PTMarket__NotSeller(marketItem.seller);
         }
-        if (offers[collection][tokenId].buyer != address(0)) {
-            _cancelOffer(collection, tokenId);
-        }
+        address currency = marketItem.currency;
         delete marketItems[collection][tokenId];
+        if (offers[collection][tokenId].buyer != address(0)) {
+            _cancelOffer(collection, tokenId, currency);
+        }
         emit ItemUnlisted(collection, tokenId);
     }
 
@@ -260,7 +261,7 @@ contract PTMarket is IPTMarket, Ownable {
         if (offer.buyer != msg.sender) {
             revert PTMarket__NotOfferer(offer.buyer);
         }
-        _cancelOffer(collection, tokenId);
+        _cancelOffer(collection, tokenId, marketItems[collection][tokenId].currency);
         emit OfferWithdrawn(collection, tokenId);
     }
 
@@ -271,11 +272,10 @@ contract PTMarket is IPTMarket, Ownable {
         emit FeePercentUpadated(newFeePercent);
     }
 
-    function _cancelOffer(address collection, uint256 tokenId) private {
+    function _cancelOffer(address collection, uint256 tokenId, address currency) private {
         Offer storage offer = offers[collection][tokenId];
         address buyer = offer.buyer;
         uint256 offerPrice = offer.offerPrice;
-        address currency = marketItems[collection][tokenId].currency;
         if (offer.isVoucher) {
             delete vouchers[collection][tokenId];
         }
@@ -341,9 +341,9 @@ contract PTMarket is IPTMarket, Ownable {
         }
 
         if (isVoucher) {
-            NFTVoucher storage voucher = vouchers[collection][tokenId];
-            IPTCollection(collection).redeem(buyer, voucher);
+            NFTVoucher memory voucher = vouchers[collection][tokenId];
             delete vouchers[collection][tokenId];
+            IPTCollection(collection).redeem(buyer, voucher);
         } else {
             IERC721(collection).safeTransferFrom(seller, buyer, tokenId);
         }
