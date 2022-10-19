@@ -13,19 +13,13 @@ contract MarketTest {
 
     constructor() {
         market = new PTMarket();
-        collection = new PTCollection(
-            address(market),
-            "Pharma Trace",
-            "PTNFT",
-            "PT-Voucher",
-            "1"
-        );
+        collection = new PTCollection(address(market), "Pharma Trace", "PTNFT", "PT-Voucher", "1");
         token = new MockToken("Mock Token", "MOCK", 18);
 
         market.whitelistCurrency(address(token), true);
         market.whitelistCollection(address(collection));
     }
-    
+
     function listItem(
         address collection,
         uint256 tokenId,
@@ -45,15 +39,27 @@ contract MarketTest {
         market.buyLazzNFT(collection, voucher);
     }
 
-    function createOffer(address collection, uint256 tokenId, uint256 offerPrice) public {
+    function createOffer(
+        address collection,
+        uint256 tokenId,
+        uint256 offerPrice
+    ) public {
         market.createOffer(collection, tokenId, offerPrice);
     }
 
-    function createLazzOffer(address collection, NFTVoucher calldata voucher, uint256 offerPrice) public {
+    function createLazzOffer(
+        address collection,
+        NFTVoucher calldata voucher,
+        uint256 offerPrice
+    ) public {
         market.createLazzOffer(collection, voucher, offerPrice);
     }
 
-    function acceptOffer(address collection, uint256 tokenId, bool acceptOrReject) public {
+    function acceptOffer(
+        address collection,
+        uint256 tokenId,
+        bool acceptOrReject
+    ) public {
         market.acceptOffer(collection, tokenId, acceptOrReject);
     }
 

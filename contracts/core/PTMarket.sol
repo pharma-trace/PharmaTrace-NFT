@@ -40,7 +40,7 @@ contract PTMarket is IPTMarket, Ownable {
 
     /// @notice this function is used whitelist/unwhitlist market supporting ERC20 tokens
     /// @param collection address of Collection
-    function whitelistCollection(address collection) override external onlyOwner {
+    function whitelistCollection(address collection) external override onlyOwner {
         emit CollectionWhitelisted(collection);
     }
 
@@ -272,7 +272,11 @@ contract PTMarket is IPTMarket, Ownable {
         emit FeePercentUpadated(newFeePercent);
     }
 
-    function _cancelOffer(address collection, uint256 tokenId, address currency) private {
+    function _cancelOffer(
+        address collection,
+        uint256 tokenId,
+        address currency
+    ) private {
         Offer storage offer = offers[collection][tokenId];
         address buyer = offer.buyer;
         uint256 offerPrice = offer.offerPrice;

@@ -82,6 +82,6 @@ yarn echidna
 
 ### Staging Testing
 ```bash
-yarn test-staging
+yarn test:staging
 ```
 

@@ -28,8 +28,8 @@ function getChainConfig(network: keyof typeof chainIds): NetworkUserConfig {
     accounts,
     chainId: chainIds[network],
     url,
-    gas: 10000000,
-    blockGasLimit: 100000000,
+    gas: 20000000,
+    blockGasLimit: 300000000,
   };
 }
 
