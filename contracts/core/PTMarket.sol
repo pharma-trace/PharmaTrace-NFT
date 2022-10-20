@@ -47,7 +47,7 @@ contract PTMarket is IPTMarket, Ownable {
     /// @notice this function is used whitelist/unwhitlist market supporting ERC20 tokens
     /// @param currency address of ERC20 token
     /// @param addOrRemove true => whitelist, false => unwhitelist
-    function whitelistCurrency(address currency, bool addOrRemove) public onlyOwner {
+    function whitelistCurrency(address currency, bool addOrRemove) public override onlyOwner {
         currencyList[currency] = addOrRemove;
         emit CurrencyWhitelisted(currency, addOrRemove);
     }
@@ -66,7 +66,7 @@ contract PTMarket is IPTMarket, Ownable {
         uint256 minPrice,
         uint256 expiresAt,
         bool isFixedPrice
-    ) external whitelisted(currency) nonReentrant(collection, tokenId) {
+    ) external override whitelisted(currency) nonReentrant(collection, tokenId) {
         require(minPrice > 0, "Listed price should be greater then zero");
         require(isFixedPrice || expiresAt > 0, "expiresAt should not be zero in auction mode");
         require(IERC721(collection).ownerOf(tokenId) == msg.sender, "Only owner of NFT will list into market");
@@ -80,7 +80,7 @@ contract PTMarket is IPTMarket, Ownable {
     /// @notice buy a fixed price of Item
     /// @param collection nft collection address
     /// @param tokenId nft tokenId
-    function buyItem(address collection, uint256 tokenId) external payable nonReentrant(collection, tokenId) {
+    function buyItem(address collection, uint256 tokenId) external payable override nonReentrant(collection, tokenId) {
         MarketItem storage marketItem = marketItems[collection][tokenId];
         require(marketItem.minPrice > 0, "Such market item doesn't exist");
 
@@ -110,6 +110,7 @@ contract PTMarket is IPTMarket, Ownable {
     function buyLazzNFT(address collection, NFTVoucher calldata voucher)
         external
         payable
+        override
         nonReentrant(collection, voucher.tokenId)
     {
         require(voucher.isFixedPrice, "This voucher is not in fixed price mode");
@@ -136,7 +137,7 @@ contract PTMarket is IPTMarket, Ownable {
         address collection,
         uint256 tokenId,
         uint256 offerPrice
-    ) external payable nonReentrant(collection, tokenId) {
+    ) external payable override nonReentrant(collection, tokenId) {
         MarketItem storage marketItem = marketItems[collection][tokenId];
         require(marketItem.minPrice > 0, "Such market item doesn't exist");
 
@@ -171,7 +172,7 @@ contract PTMarket is IPTMarket, Ownable {
         address collection,
         NFTVoucher calldata voucher,
         uint256 offerPrice
-    ) external payable whitelisted(voucher.currency) nonReentrant(collection, voucher.tokenId) {
+    ) external payable override whitelisted(voucher.currency) nonReentrant(collection, voucher.tokenId) {
         require(!voucher.isFixedPrice, "This voucher is in fixed price mode");
         uint256 tokenId = voucher.tokenId;
         _checkNFTApproved(collection, tokenId, true);
@@ -205,7 +206,7 @@ contract PTMarket is IPTMarket, Ownable {
         address collection,
         uint256 tokenId,
         bool acceptOrReject
-    ) external nonReentrant(collection, tokenId) {
+    ) external override nonReentrant(collection, tokenId) {
         Offer storage offer = offers[collection][tokenId];
         bool isVoucher = offer.isVoucher;
         require(offer.buyer != address(0), "Such offer doesn't exist");
@@ -240,7 +241,7 @@ contract PTMarket is IPTMarket, Ownable {
     /// @notice remove existing item
     /// @param collection nft collection address
     /// @param tokenId nft tokenId
-    function unlistItem(address collection, uint256 tokenId) external nonReentrant(collection, tokenId) {
+    function unlistItem(address collection, uint256 tokenId) external override nonReentrant(collection, tokenId) {
         MarketItem storage marketItem = marketItems[collection][tokenId];
         if (marketItem.seller != msg.sender) {
             revert PTMarket__NotSeller(marketItem.seller);
@@ -256,7 +257,7 @@ contract PTMarket is IPTMarket, Ownable {
     /// @notice remove existing offer
     /// @param collection nft collection address
     /// @param tokenId nft tokenId
-    function withdrawOffer(address collection, uint256 tokenId) external nonReentrant(collection, tokenId) {
+    function withdrawOffer(address collection, uint256 tokenId) external override nonReentrant(collection, tokenId) {
         Offer storage offer = offers[collection][tokenId];
         if (offer.buyer != msg.sender) {
             revert PTMarket__NotOfferer(offer.buyer);
@@ -267,7 +268,7 @@ contract PTMarket is IPTMarket, Ownable {
 
     /// @notice update feePercent
     /// @param newFeePercent fee percent
-    function setFeePercent(uint256 newFeePercent) public onlyOwner {
+    function setFeePercent(uint256 newFeePercent) public override onlyOwner {
         feePercent = newFeePercent;
         emit FeePercentUpadated(newFeePercent);
     }

@@ -6,6 +6,45 @@ import "../libraries/Helper.sol";
 interface IPTMarket {
     function whitelistCollection(address collection) external;
 
+    function whitelistCurrency(address currency, bool addOrRemove) external;
+
+    function listItem(
+        address collection,
+        uint256 tokenId,
+        address currency,
+        uint256 minPrice,
+        uint256 expiresAt,
+        bool isFixedPrice
+    ) external;
+
+    function buyItem(address collection, uint256 tokenId) external payable;
+
+    function buyLazzNFT(address collection, NFTVoucher calldata voucher) external payable;
+
+    function createOffer(
+        address collection,
+        uint256 tokenId,
+        uint256 offerPrice
+    ) external payable;
+
+    function createLazzOffer(
+        address collection,
+        NFTVoucher calldata voucher,
+        uint256 offerPrice
+    ) external payable;
+
+    function acceptOffer(
+        address collection,
+        uint256 tokenId,
+        bool acceptOrReject
+    ) external;
+
+    function unlistItem(address collection, uint256 tokenId) external;
+
+    function withdrawOffer(address collection, uint256 tokenId) external;
+
+    function setFeePercent(uint256 newFeePercent) external;
+
     // structs
     struct MarketItem {
         address seller;
