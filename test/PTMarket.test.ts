@@ -129,13 +129,11 @@ describe("PTMarket", async function () {
       ).to.revertedWithCustomError(ptMarket, "PTMarket__LowerPriceThanPrevious");
     });
     it("createLazzOffer overwrite with lower price than previous", async function () {
-      await expect(
-        ptMarket.connect(userB).createLazzOffer(ptCollection.address, voucher0, OFFER_PRICE, {
-          value: OFFER_PRICE,
-        }),
-      )
-        .to.emit(ptMarket, "OfferCreated")
-        .to.emit(ptMarket, "VoucherWritten");
+      const tx = ptMarket.connect(userB).createLazzOffer(ptCollection.address, voucher0, OFFER_PRICE, {
+        value: OFFER_PRICE,
+      });
+      await expect(tx).to.emit(ptMarket, "OfferCreated");
+      await expect(tx).to.emit(ptMarket, "VoucherWritten");
 
       await expect(
         ptMarket.connect(userC).createLazzOffer(ptCollection.address, voucher0, OFFER_PRICE, {
@@ -144,13 +142,11 @@ describe("PTMarket", async function () {
       ).to.revertedWithCustomError(ptMarket, "PTMarket__LowerPriceThanPrevious");
     });
     it("createLazzOffer overwrite", async function () {
-      await expect(
-        ptMarket.connect(userB).createLazzOffer(ptCollection.address, voucher0, OFFER_PRICE, {
-          value: OFFER_PRICE,
-        }),
-      )
-        .to.emit(ptMarket, "OfferCreated")
-        .to.emit(ptMarket, "VoucherWritten");
+      const tx = ptMarket.connect(userB).createLazzOffer(ptCollection.address, voucher0, OFFER_PRICE, {
+        value: OFFER_PRICE,
+      });
+      await expect(tx).to.emit(ptMarket, "OfferCreated");
+      await expect(tx).to.emit(ptMarket, "VoucherWritten");
       const priceOverwrite = OFFER_PRICE.add(1);
       await expect(
         ptMarket.connect(userC).createLazzOffer(ptCollection.address, voucher0, priceOverwrite, {
@@ -227,19 +223,17 @@ describe("PTMarket", async function () {
       await mockToken.mintTo(await userB.getAddress(), MINT_AMOUNT);
 
       await mockToken.connect(userB).approve(ptMarket.address, OFFER_PRICE);
-      await expect(ptMarket.connect(userB).createOffer(ptCollection.address, tokenId, OFFER_PRICE))
-        .to.emit(ptMarket, "OfferCreated")
-        .to.changeTokenBalance(mockToken, ptMarket, OFFER_PRICE);
+      const tx = ptMarket.connect(userB).createOffer(ptCollection.address, tokenId, OFFER_PRICE);
+      await expect(tx).to.emit(ptMarket, "OfferCreated");
+      await expect(tx).to.changeTokenBalance(mockToken, ptMarket, OFFER_PRICE);
     });
     it("createOffer with eth", async function () {
       await ptMarket.connect(userA).listItem(ptCollection.address, tokenId, ZERO_ADDRESS, MIN_PRICE, EXPIRES_AT, false);
-      await expect(
-        ptMarket.connect(userB).createOffer(ptCollection.address, tokenId, OFFER_PRICE, {
-          value: OFFER_PRICE,
-        }),
-      )
-        .to.emit(ptMarket, "OfferCreated")
-        .to.changeEtherBalance(ptMarket, OFFER_PRICE);
+      const tx = ptMarket.connect(userB).createOffer(ptCollection.address, tokenId, OFFER_PRICE, {
+        value: OFFER_PRICE,
+      });
+      await expect(tx).to.emit(ptMarket, "OfferCreated");
+      await expect(tx).to.changeEtherBalance(ptMarket, OFFER_PRICE);
     });
     it("createOffer overwrite with token", async function () {
       await ptMarket
@@ -303,9 +297,9 @@ describe("PTMarket", async function () {
         ).to.revertedWithCustomError(ptMarket, "PTMarket__NotSeller");
       });
       it("accept LazzOffer success", async function () {
-        await expect(ptMarket.connect(userA).acceptOffer(ptCollection.address, voucher.tokenId, true))
-          .to.emit(ptMarket, "TradeExecuted")
-          .to.emit(ptMarket, "OfferAccepted");
+        const tx = ptMarket.connect(userA).acceptOffer(ptCollection.address, voucher.tokenId, true);
+        await expect(tx).to.emit(ptMarket, "TradeExecuted");
+        await expect(tx).to.emit(ptMarket, "OfferAccepted");
       });
       it("reject LazzOffer success", async function () {
         await expect(ptMarket.connect(userA).acceptOffer(ptCollection.address, voucher.tokenId, false)).to.emit(
@@ -348,9 +342,9 @@ describe("PTMarket", async function () {
         );
       });
       it("acceptOffer", async function () {
-        await expect(ptMarket.connect(userA).acceptOffer(ptCollection.address, tokenId, true))
-          .to.emit(ptMarket, "TradeExecuted")
-          .to.emit(ptMarket, "OfferAccepted");
+        const tx = ptMarket.connect(userA).acceptOffer(ptCollection.address, tokenId, true);
+        await expect(tx).to.emit(ptMarket, "TradeExecuted");
+        await expect(tx).to.emit(ptMarket, "OfferAccepted");
 
         await ptCollection.connect(userB).approve(await userA.getAddress(), tokenId);
         await ptCollection.connect(userA).transferFrom(await userB.getAddress(), await userA.getAddress(), tokenId);
@@ -502,14 +496,14 @@ describe("PTMarket", async function () {
 
         await mockToken.connect(userB).approve(ptMarket.address, MIN_PRICE);
         const expectedFee = MIN_PRICE.mul(await ptMarket.feePercent()).div(DENOMINATOR);
-        await expect(ptMarket.connect(userB).buyItem(ptCollection.address, tokenId))
-          .to.emit(ptMarket, "TradeExecuted")
-          .to.emit(ptMarket, "ItemBought")
-          .to.changeTokenBalances(
-            mockToken,
-            [userB, admin, userA],
-            [MIN_PRICE.mul(-1), expectedFee, MIN_PRICE.sub(expectedFee)],
-          );
+        const tx = ptMarket.connect(userB).buyItem(ptCollection.address, tokenId);
+        await expect(tx).to.emit(ptMarket, "TradeExecuted");
+        await expect(tx).to.emit(ptMarket, "ItemBought");
+        await expect(tx).to.changeTokenBalances(
+          mockToken,
+          [userB, admin, userA],
+          [MIN_PRICE.mul(-1), expectedFee, MIN_PRICE.sub(expectedFee)],
+        );
       });
       it("buyItem with eth", async function () {
         await ptMarket
@@ -517,14 +511,15 @@ describe("PTMarket", async function () {
           .listItem(ptCollection.address, tokenId, ZERO_ADDRESS, MIN_PRICE, EXPIRES_AT, true);
 
         const expectedFee = MIN_PRICE.mul(await ptMarket.feePercent()).div(DENOMINATOR);
-        await expect(
-          ptMarket.connect(userB).buyItem(ptCollection.address, tokenId, {
-            value: MIN_PRICE,
-          }),
-        )
-          .to.emit(ptMarket, "TradeExecuted")
-          .to.emit(ptMarket, "ItemBought")
-          .to.changeEtherBalances([userB, admin, userA], [MIN_PRICE.mul(-1), expectedFee, MIN_PRICE.sub(expectedFee)]);
+        const tx = ptMarket.connect(userB).buyItem(ptCollection.address, tokenId, {
+          value: MIN_PRICE,
+        });
+        await expect(tx).to.emit(ptMarket, "TradeExecuted");
+        await expect(tx).to.emit(ptMarket, "ItemBought");
+        await expect(tx).to.changeEtherBalances(
+          [userB, admin, userA],
+          [MIN_PRICE.mul(-1), expectedFee, MIN_PRICE.sub(expectedFee)],
+        );
       });
 
       afterEach(async () => {
@@ -558,14 +553,12 @@ describe("PTMarket", async function () {
     });
     it("buyLazzNFT success", async () => {
       const voucher = await createNewVoucher(userA, ZERO_ADDRESS, MIN_PRICE, true);
-      await expect(
-        ptMarket.connect(userB).buyLazzNFT(ptCollection.address, voucher, {
-          value: MIN_PRICE,
-        }),
-      )
-        .to.emit(ptMarket, "VoucherWritten")
-        .to.emit(ptMarket, "ItemBought")
-        .to.emit(ptMarket, "TradeExecuted");
+      const tx = ptMarket.connect(userB).buyLazzNFT(ptCollection.address, voucher, {
+        value: MIN_PRICE,
+      });
+      await expect(tx).to.emit(ptMarket, "VoucherWritten");
+      await expect(tx).to.emit(ptMarket, "ItemBought");
+      await expect(tx).to.emit(ptMarket, "TradeExecuted");
     });
   });
 
